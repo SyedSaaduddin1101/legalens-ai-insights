@@ -1,12 +1,13 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff, Check } from "lucide-react";
 
 const SignupForm = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -38,14 +39,20 @@ const SignupForm = () => {
     setTimeout(() => {
       setIsLoading(false);
       
-      // For demo purposes, we're using a mock successful signup
+      // Store authentication token (in a real app, this would be a JWT token)
+      localStorage.setItem("legalens-user", JSON.stringify({
+        id: "user-" + Math.random().toString(36).substring(2, 9),
+        email: formData.email,
+        name: `${formData.firstName} ${formData.lastName}`,
+      }));
+      
       toast({
         title: "Account created successfully",
         description: "Welcome to LegaLens!",
       });
       
-      // In a real app, we would redirect to dashboard after successful signup
-      // navigate("/dashboard");
+      // Redirect to dashboard
+      navigate("/dashboard");
     }, 1500);
   };
 
@@ -60,7 +67,7 @@ const SignupForm = () => {
   const passwordStrength = getPasswordStrength(formData.password);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
       <div className="space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -75,6 +82,7 @@ const SignupForm = () => {
               placeholder="John"
               value={formData.firstName}
               onChange={handleChange}
+              className="focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
             />
           </div>
 
@@ -90,6 +98,7 @@ const SignupForm = () => {
               placeholder="Doe"
               value={formData.lastName}
               onChange={handleChange}
+              className="focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
             />
           </div>
         </div>
@@ -107,6 +116,7 @@ const SignupForm = () => {
             placeholder="name@example.com"
             value={formData.email}
             onChange={handleChange}
+            className="focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
           />
         </div>
 
@@ -124,7 +134,7 @@ const SignupForm = () => {
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
-              className="pr-10"
+              className="pr-10 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
             />
             <button
               type="button"
@@ -140,7 +150,7 @@ const SignupForm = () => {
           </div>
           
           {formData.password && (
-            <div className="mt-2">
+            <div className="mt-2 animate-fade-in">
               <div className="flex items-center">
                 <div className="w-full bg-gray-200 rounded-full h-2 mr-2">
                   <div
@@ -150,7 +160,7 @@ const SignupForm = () => {
                         : passwordStrength.strength === 2
                         ? "bg-yellow-500 w-2/3"
                         : "bg-green-500 w-full"
-                    }`}
+                    } transition-all duration-500`}
                   ></div>
                 </div>
                 <span className="text-xs text-gray-500">{passwordStrength.text}</span>
@@ -181,22 +191,26 @@ const SignupForm = () => {
             required
             checked={formData.agreeTerms}
             onChange={handleChange}
-            className="h-4 w-4 rounded border-gray-300 text-legal-light-blue focus:ring-legal-light-blue"
+            className="h-4 w-4 rounded border-gray-300 text-purple-500 focus:ring-purple-500"
           />
           <label htmlFor="agreeTerms" className="ml-2 block text-sm text-gray-700">
             I agree to the{" "}
-            <Link to="/terms" className="text-legal-light-blue hover:text-legal-blue">
+            <Link to="/terms" className="text-purple-500 hover:text-purple-700">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link to="/privacy" className="text-legal-light-blue hover:text-legal-blue">
+            <Link to="/privacy" className="text-purple-500 hover:text-purple-700">
               Privacy Policy
             </Link>
           </label>
         </div>
       </div>
 
-      <Button type="submit" disabled={isLoading} className="w-full bg-legal-light-blue hover:bg-legal-blue">
+      <Button 
+        type="submit" 
+        disabled={isLoading} 
+        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+      >
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -209,7 +223,7 @@ const SignupForm = () => {
 
       <div className="text-center text-sm text-gray-600">
         Already have an account?{" "}
-        <Link to="/login" className="font-medium text-legal-light-blue hover:text-legal-blue">
+        <Link to="/login" className="font-medium text-purple-500 hover:text-purple-700">
           Sign in
         </Link>
       </div>
