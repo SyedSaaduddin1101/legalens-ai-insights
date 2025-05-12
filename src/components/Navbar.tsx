@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import Logo from './Logo';
+import { HashLink } from 'react-router-hash-link';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +14,13 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Smooth scroll function for HashLink
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80; 
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' }); 
   };
 
   // Check if user is scrolled
@@ -38,28 +47,43 @@ const Navbar = () => {
 
   return (
     <header 
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-all duration-500 ${
         isScrolled 
-          ? 'backdrop-blur-md bg-white/70 border-b border-purple-100 shadow-sm' 
-          : 'backdrop-blur-sm bg-white/40'
+          ? 'backdrop-blur-lg bg-white/70 border-b border-purple-100 shadow-sm' 
+          : 'backdrop-blur-md bg-white/40'
       }`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2 group">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center transform transition-transform group-hover:scale-110 duration-300">
-            <span className="text-white font-serif font-bold text-lg">L</span>
-          </div>
-          <span className="font-serif text-xl font-bold text-gray-800">
-            Lega<span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Lens</span>
-          </span>
-        </Link>
+        <Logo size="md" variant={isScrolled ? 'dark' : 'dark'} />
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
-          <Link to="/" className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">Home</Link>
-          <Link to="/features" className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">Features</Link>
-          <Link to="/pricing" className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">Pricing</Link>
-          <Link to="/contact" className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left">Contact</Link>
+          <HashLink 
+            to="/#hero" 
+            scroll={scrollWithOffset}
+            className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+          >
+            Home
+          </HashLink>
+          <HashLink 
+            to="/#features" 
+            scroll={scrollWithOffset}
+            className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+          >
+            Features
+          </HashLink>
+          <Link 
+            to="/pricing" 
+            className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+          >
+            Pricing
+          </Link>
+          <Link 
+            to="/contact" 
+            className="text-gray-700 hover:text-purple-500 transition-colors relative after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-gradient-to-r after:from-purple-500 after:to-pink-500 after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left"
+          >
+            Contact
+          </Link>
         </nav>
 
         {/* Auth Buttons - Desktop */}
@@ -70,7 +94,7 @@ const Navbar = () => {
                 <Link to="/dashboard">Dashboard</Link>
               </Button>
               <Button 
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
                 onClick={() => {
                   localStorage.removeItem("legalens-user");
                   window.location.href = "/";
@@ -84,7 +108,7 @@ const Navbar = () => {
               <Button variant="outline" className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 transition-all duration-300 transform hover:scale-105" asChild>
                 <Link to="/login">Log in</Link>
               </Button>
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105" asChild>
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105" asChild>
                 <Link to="/signup">Sign up</Link>
               </Button>
             </>
@@ -103,22 +127,24 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-md animate-slide-up">
+        <div className="md:hidden bg-white/95 backdrop-blur-md animate-slide-in-right">
           <div className="container mx-auto px-4 py-4 flex flex-col space-y-4">
-            <Link 
-              to="/" 
+            <HashLink 
+              to="/#hero" 
+              scroll={scrollWithOffset}
               className="text-gray-700 hover:text-purple-500 transition-colors py-2 border-b border-purple-100"
               onClick={toggleMenu}
             >
               Home
-            </Link>
-            <Link 
-              to="/features" 
+            </HashLink>
+            <HashLink 
+              to="/#features" 
+              scroll={scrollWithOffset}
               className="text-gray-700 hover:text-purple-500 transition-colors py-2 border-b border-purple-100"
               onClick={toggleMenu}
             >
               Features
-            </Link>
+            </HashLink>
             <Link 
               to="/pricing" 
               className="text-gray-700 hover:text-purple-500 transition-colors py-2 border-b border-purple-100"
@@ -140,7 +166,7 @@ const Navbar = () => {
                   <Button variant="outline" className="w-full border-purple-200" asChild>
                     <Link to="/dashboard" onClick={toggleMenu}>Dashboard</Link>
                   </Button>
-                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90" 
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90" 
                     onClick={() => {
                       localStorage.removeItem("legalens-user");
                       window.location.href = "/";
@@ -155,7 +181,7 @@ const Navbar = () => {
                   <Button variant="outline" className="w-full border-purple-200" asChild>
                     <Link to="/login" onClick={toggleMenu}>Log in</Link>
                   </Button>
-                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90" asChild>
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90" asChild>
                     <Link to="/signup" onClick={toggleMenu}>Sign up</Link>
                   </Button>
                 </>

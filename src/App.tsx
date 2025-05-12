@@ -15,6 +15,9 @@ import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import LearnMore from "./pages/LearnMore";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +36,8 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/learn-more" element={<LearnMore />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           
           {/* Protected Routes */}
           <Route 
@@ -45,7 +50,19 @@ const App = () => (
           />
           <Route 
             path="/try-now" 
-            element={<TryNow />} 
+            element={
+              <ProtectedRoute>
+                <TryNow />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } 
           />
           
           {/* Catch-all 404 route */}

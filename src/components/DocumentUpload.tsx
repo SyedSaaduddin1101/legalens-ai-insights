@@ -1,8 +1,10 @@
 
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useRef } from "react";
 import { Upload, File, Loader2, X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { analyzeDocument } from "../services/ai";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface AnalysisResult {
   plainLanguage: string;
@@ -16,15 +18,36 @@ const DocumentUpload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [documentText, setDocumentText] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // Check authentication
+  useState(() => {
+    const userLoggedIn = localStorage.getItem("legalens-user");
+    setIsAuthenticated(!!userLoggedIn);
+    setCheckingAuth(false);
+  });
   
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0] || null;
     if (selectedFile) {
       // Check if file is a PDF or document
-      const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+      const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
       if (validTypes.includes(selectedFile.type)) {
         setFile(selectedFile);
         setAnalysisResult(null);
+        
+        // If text file, read content
+        if (selectedFile.type === "text/plain") {
+          const text = await selectedFile.text();
+          setDocumentText(text);
+        } else {
+          // In a real app, we would use PDF.js or a similar library to extract text
+          setDocumentText("Sample extracted text from document for demonstration purposes.");
+        }
       } else {
         toast({
           variant: "destructive",
@@ -35,14 +58,23 @@ const DocumentUpload = () => {
     }
   };
   
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
     if (droppedFile) {
-      const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+      const validTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain"];
       if (validTypes.includes(droppedFile.type)) {
         setFile(droppedFile);
         setAnalysisResult(null);
+        
+        // If text file, read content
+        if (droppedFile.type === "text/plain") {
+          const text = await droppedFile.text();
+          setDocumentText(text);
+        } else {
+          // In a real app, we would use PDF.js or similar to extract text
+          setDocumentText("Sample extracted text from document for demonstration purposes.");
+        }
       } else {
         toast({
           variant: "destructive",
@@ -60,53 +92,40 @@ const DocumentUpload = () => {
   const clearFile = () => {
     setFile(null);
     setAnalysisResult(null);
+    setDocumentText("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
   
-  const analyzeDocument = () => {
+  const analyzeDocumentHandler = async () => {
     if (!file) return;
     
     setIsAnalyzing(true);
     
-    // Simulate analysis (in a real app, this would be an API call)
-    setTimeout(() => {
-      // Mock result
-      setAnalysisResult({
-        plainLanguage: "This contract establishes a partnership between Company A and Company B for the development of software products. The agreement is valid for 3 years and includes provisions for intellectual property rights, confidentiality, and termination conditions.",
-        keyTerms: [
-          {
-            term: "Intellectual Property Rights",
-            explanation: "All software developed under this agreement will be jointly owned by both parties, with equal rights to use and modify."
-          },
-          {
-            term: "Confidentiality Clause",
-            explanation: "Both parties must keep all shared information confidential for 5 years after termination."
-          },
-          {
-            term: "Termination Conditions",
-            explanation: "Either party can terminate with 60 days written notice. Early termination requires compensation."
-          }
-        ],
-        risks: [
-          {
-            title: "Ambiguous Liability Clause",
-            description: "Section 8.2 contains vague language about liability limits that could lead to disputes.",
-            severity: "high"
-          },
-          {
-            title: "Missing Payment Terms",
-            description: "The contract doesn't specify clear payment schedules or late payment penalties.",
-            severity: "medium"
-          }
-        ],
-        summary: "This is a 3-year partnership agreement between Company A and B for software development with joint IP ownership, 5-year confidentiality terms, and 60-day termination notice. Key concerns include ambiguous liability language and incomplete payment terms."
-      });
-      setIsAnalyzing(false);
+    try {
+      // Use the AI service to analyze the document
+      const result = await analyzeDocument(
+        documentText, 
+        file.name.endsWith('.pdf') ? 'PDF contract' : 'legal document'
+      );
+      
+      setAnalysisResult(result);
       
       toast({
         title: "Analysis Complete",
         description: "Your document has been successfully analyzed.",
       });
-    }, 3000);
+    } catch (error) {
+      console.error("Error during analysis:", error);
+      toast({
+        variant: "destructive",
+        title: "Analysis Failed",
+        description: "An error occurred during analysis. Please try again.",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
   
   const downloadSummary = () => {
@@ -144,11 +163,49 @@ const DocumentUpload = () => {
     URL.revokeObjectURL(url);
   };
   
+  // Show login prompt for non-authenticated users
+  const renderLoginPrompt = () => (
+    <div className="text-center py-10">
+      <div className="bg-white/80 backdrop-blur-md p-8 rounded-lg border border-purple-100 shadow-lg max-w-lg mx-auto animate-fade-in">
+        <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+          Sign in to Analyze Documents
+        </h3>
+        <p className="text-gray-600 mb-6">
+          Create an account or sign in to access our AI-powered legal document analysis features.
+        </p>
+        <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center">
+          <Button 
+            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+            onClick={() => window.location.href = "/login"}
+          >
+            Sign In
+          </Button>
+          <Button 
+            variant="outline" 
+            className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 transition-all duration-300"
+            onClick={() => window.location.href = "/signup"}
+          >
+            Create Account
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+  
+  // If on index page and not authenticated, show login prompt
+  if (location.pathname === "/" && isAuthenticated === false && !checkingAuth) {
+    return renderLoginPrompt();
+  }
+
+  // If on try-now page but not authenticated, redirect happens via ProtectedRoute
+  
   return (
-    <section className="section-padding" id="try-now">
+    <section className="section-padding animate-fade-in" id="document-upload">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-legal-navy">Analyze Your Document</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+            Analyze Your Document
+          </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Upload a contract or legal document to receive an instant AI-powered analysis including plain language explanation, key terms, and risk identification.
           </p>
@@ -157,33 +214,39 @@ const DocumentUpload = () => {
         <div className="max-w-4xl mx-auto">
           {!file ? (
             <div
-              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center glass-card cursor-pointer hover:border-legal-light-blue transition-colors"
+              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center glass-card cursor-pointer hover:border-purple-400 transition-colors relative overflow-hidden group"
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onClick={() => document.getElementById("file-upload")?.click()}
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute -inset-full bg-gradient-to-r from-purple-200/0 via-purple-200/10 to-pink-200/0 top-1/2 group-hover:animate-[shimmer_2s_ease-in-out_infinite] z-0"></div>
+              
               <input
                 id="file-upload"
+                ref={fileInputRef}
                 type="file"
                 className="hidden"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf,.doc,.docx,.txt"
                 onChange={handleFileChange}
               />
-              <Upload size={48} className="mx-auto mb-4 text-legal-light-blue" />
-              <h3 className="text-xl font-semibold mb-2">Upload Your Document</h3>
-              <p className="text-gray-500 mb-4">
-                Drag and drop your file here, or click to browse
-              </p>
-              <p className="text-gray-400 text-sm">
-                Supports PDF, DOC, DOCX (Max 10MB)
-              </p>
+              <div className="relative z-10">
+                <Upload size={48} className="mx-auto mb-4 text-purple-500" />
+                <h3 className="text-xl font-semibold mb-2 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Upload Your Document</h3>
+                <p className="text-gray-500 mb-4">
+                  Drag and drop your file here, or click to browse
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Supports PDF, DOC, DOCX, TXT (Max 10MB)
+                </p>
+              </div>
             </div>
           ) : (
-            <div className="glass-card p-6">
+            <div className="glass-card p-6 border border-purple-100 shadow-lg rounded-lg bg-white/80 backdrop-blur-md animate-fade-in">
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded mr-4">
-                    <File size={24} className="text-legal-light-blue" />
+                  <div className="bg-purple-100 p-2 rounded-lg mr-4">
+                    <File size={24} className="text-purple-500" />
                   </div>
                   <div>
                     <p className="font-medium">{file.name}</p>
@@ -192,15 +255,15 @@ const DocumentUpload = () => {
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={clearFile}>
+                <Button variant="ghost" size="icon" onClick={clearFile} className="hover:bg-purple-50">
                   <X size={20} />
                 </Button>
               </div>
               
               {!analysisResult && !isAnalyzing && (
                 <Button 
-                  className="w-full bg-legal-light-blue hover:bg-legal-blue" 
-                  onClick={analyzeDocument}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105" 
+                  onClick={analyzeDocumentHandler}
                 >
                   Analyze Document
                 </Button>
@@ -208,7 +271,10 @@ const DocumentUpload = () => {
               
               {isAnalyzing && (
                 <div className="text-center py-8">
-                  <Loader2 size={40} className="animate-spin mx-auto mb-4 text-legal-light-blue" />
+                  <div className="relative mx-auto w-16 h-16 mb-4">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-xl opacity-70 animate-pulse"></div>
+                    <Loader2 size={40} className="animate-spin mx-auto relative z-10 text-purple-600" />
+                  </div>
                   <p className="text-gray-600">Analyzing your document...</p>
                   <p className="text-sm text-gray-500 mt-2">This may take a minute</p>
                 </div>
@@ -217,18 +283,18 @@ const DocumentUpload = () => {
               {analysisResult && (
                 <div className="mt-6 animate-fade-in">
                   <div className="mb-8">
-                    <h3 className="font-semibold text-lg mb-3 text-legal-navy">Plain Language Explanation</h3>
-                    <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Plain Language Explanation</h3>
+                    <div className="bg-white rounded-lg p-4 border border-purple-100 shadow-sm">
                       <p className="text-gray-700">{analysisResult.plainLanguage}</p>
                     </div>
                   </div>
                   
                   <div className="mb-8">
-                    <h3 className="font-semibold text-lg mb-3 text-legal-navy">Key Terms</h3>
-                    <div className="bg-white rounded-lg border border-gray-100 divide-y divide-gray-100">
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Key Terms</h3>
+                    <div className="bg-white rounded-lg border border-purple-100 shadow-sm divide-y divide-purple-50">
                       {analysisResult.keyTerms.map((term, index) => (
-                        <div key={index} className="p-4">
-                          <h4 className="font-medium text-legal-light-blue">{term.term}</h4>
+                        <div key={index} className="p-4 hover:bg-purple-50/50 transition-colors">
+                          <h4 className="font-medium text-purple-700">{term.term}</h4>
                           <p className="text-gray-700 mt-1">{term.explanation}</p>
                         </div>
                       ))}
@@ -236,12 +302,12 @@ const DocumentUpload = () => {
                   </div>
                   
                   <div className="mb-8">
-                    <h3 className="font-semibold text-lg mb-3 text-legal-navy">Risk Identification</h3>
-                    <div className="bg-white rounded-lg border border-gray-100 divide-y divide-gray-100">
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Risk Identification</h3>
+                    <div className="bg-white rounded-lg border border-purple-100 shadow-sm divide-y divide-purple-50">
                       {analysisResult.risks.map((risk, index) => (
-                        <div key={index} className="p-4">
+                        <div key={index} className="p-4 hover:bg-purple-50/50 transition-colors">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium">{risk.title}</h4>
+                            <h4 className="font-medium text-gray-800">{risk.title}</h4>
                             <span 
                               className={`px-2 py-1 text-xs font-medium rounded-full ${
                                 risk.severity === 'high' ? 'bg-red-100 text-red-800' :
@@ -261,13 +327,16 @@ const DocumentUpload = () => {
                   </div>
                   
                   <div className="mb-6">
-                    <h3 className="font-semibold text-lg mb-3 text-legal-navy">Summary</h3>
-                    <div className="bg-white rounded-lg p-4 border border-gray-100">
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Summary</h3>
+                    <div className="bg-white rounded-lg p-4 border border-purple-100 shadow-sm">
                       <p className="text-gray-700">{analysisResult.summary}</p>
                     </div>
                   </div>
                   
-                  <Button onClick={downloadSummary} className="w-full">
+                  <Button 
+                    onClick={downloadSummary} 
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+                  >
                     <Download size={16} className="mr-2" />
                     Download Summary
                   </Button>

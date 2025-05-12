@@ -1,146 +1,204 @@
 
-import { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { ArrowDown, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { HashLink } from 'react-router-hash-link';
+import { useState, useEffect } from "react";
 
 const HeroSection = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // Check if user is authenticated
   useEffect(() => {
-    setIsLoaded(true);
+    const userLoggedIn = localStorage.getItem("legalens-user");
+    setIsAuthenticated(!!userLoggedIn);
   }, []);
 
+  // Track mouse position for 3D effect
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: e.clientX / window.innerWidth - 0.5,
+        y: e.clientY / window.innerHeight - 0.5,
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  // Calculate 3D transforms based on mouse position
+  const getTransform = (factor: number = 1) => {
+    const x = mousePosition.x * 20 * factor;
+    const y = mousePosition.y * 20 * factor;
+    return `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg)`;
+  };
+
+  // Smooth scroll function
+  const scrollToContent = () => {
+    const featuresSection = document.getElementById('features');
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <section className="relative overflow-hidden min-h-[calc(100vh-5rem)] flex items-center">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50"></div>
+    <section className="pt-16 pb-20 md:pt-24 md:pb-32 overflow-hidden bg-gradient-to-b from-purple-50 to-white" id="hero">
+      <div className="container mx-auto px-4 relative">
+        {/* Background floating elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-pink-400/10 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-purple-400/10 rounded-full blur-xl animate-pulse animation-delay-500"></div>
+        <div className="absolute top-1/4 right-1/3 w-4 h-4 bg-purple-400 rounded-full opacity-40 animate-[sparkling_3s_ease-in-out_infinite]"></div>
+        <div className="absolute top-2/3 left-1/4 w-3 h-3 bg-pink-400 rounded-full opacity-30 animate-[sparkling_2s_ease-in-out_infinite_500ms]"></div>
         
-        {/* Animated floating elements */}
-        <div className="absolute top-20 right-20 w-64 h-64 rounded-full bg-gradient-to-r from-purple-300/20 to-pink-300/20 animate-pulse"></div>
-        <div className="absolute bottom-40 right-10 w-40 h-40 rounded-full bg-gradient-to-r from-pink-300/20 to-purple-300/20 animate-pulse" style={{animationDuration: '8s'}}></div>
-        <div className="absolute top-40 left-10 w-56 h-56 rounded-full bg-gradient-to-r from-purple-300/20 to-pink-300/20 animate-pulse" style={{animationDuration: '12s'}}></div>
-        
-        {/* 3D-like geometric shapes */}
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 transform -translate-x-1/2 -translate-y-1/2 rotate-45 bg-gradient-to-br from-purple-400/10 to-transparent animate-spin-slow" style={{animationDuration: '20s'}}></div>
-        <div className="absolute top-3/4 right-1/4 w-24 h-24 transform -translate-y-1/2 rounded-lg bg-gradient-to-br from-pink-400/10 to-purple-400/10 animate-float"></div>
-        
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMxIDAgMS0yIDAtMnMtMSAyIDAgMm0tMTIgNGMxIDAgMS0yIDAtMnMtMSAyIDAgMm0tMTIgNGMxIDAgMS0yIDAtMnMtMSAyIDAgMiIgZmlsbD0iI0JGOTRGRiIvPjwvZz48L3N2Zz4=')] opacity-40"></div>
-      </div>
-      
-      <div className="container mx-auto px-4 relative z-10 flex flex-col py-20 md:py-28">
-        <div className="max-w-3xl">
-          <h1 
-            className={`text-4xl md:text-6xl font-bold mb-6 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-700 via-purple-500 to-pink-500">
-              Understand Legal Documents
-            </span>{' '}
-            <span className="relative inline-block">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">
-                with AI
-              </span>
-              <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-pink-500 to-purple-500 opacity-20 blur-xl"></span>
-            </span>
-          </h1>
-          
-          <p 
-            className={`text-lg md:text-xl text-gray-700 mb-8 transition-all duration-1000 delay-100 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-          >
-            LegaLens instantly analyzes contracts, NDAs, and legal agreements, highlighting key terms, identifying risks, and providing summaries in plain English — powered by advanced AI technology.
-          </p>
-          
-          <div 
-            className={`flex flex-col sm:flex-row gap-4 transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-          >
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105" 
-              asChild
-            >
-              <Link to="/try-now" className="flex items-center">
-                Try Now Free <ArrowRight size={16} className="ml-2 animate-bounce-x" />
-              </Link>
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-purple-200 hover:bg-purple-50 hover:text-purple-500 hover:border-purple-300 transition-all duration-300 transform hover:scale-105" 
-              asChild
-            >
-              <Link to="/learn-more">Learn More</Link>
-            </Button>
+        <div className="flex flex-col md:flex-row items-center justify-between space-y-12 md:space-y-0 md:space-x-8">
+          {/* Hero Content */}
+          <div className="md:w-1/2 text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent animate-fade-in">
+                AI-Powered
+              </span> <br />
+              <span className="animate-fade-in animate-delay-100">Legal Document Analysis</span>
+            </h1>
+            
+            <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto md:mx-0 animate-fade-in animate-delay-200">
+              Understand complex legal documents in seconds. Get plain language explanations, key term highlights, and risk identification with our advanced AI.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center md:justify-start animate-fade-in animate-delay-300">
+              {isAuthenticated ? (
+                <Button 
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105 group relative"
+                  size="lg"
+                  asChild
+                >
+                  <Link to="/try-now">
+                    <span className="relative z-10">Analyze Document</span>
+                    <span className="absolute inset-0 bg-white rounded-md opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+                    <Sparkles className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100" />
+                  </Link>
+                </Button>
+              ) : (
+                <Button 
+                  className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105 group relative"
+                  size="lg"
+                  asChild
+                >
+                  <Link to="/signup">
+                    <span className="relative z-10">Get Started</span>
+                    <span className="absolute inset-0 bg-white rounded-md opacity-0 group-hover:opacity-20 transition-opacity duration-300"></span>
+                    <Sparkles className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100" />
+                  </Link>
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 transition-all"
+                size="lg"
+                asChild
+              >
+                <Link to="/learn-more">
+                  Learn More
+                </Link>
+              </Button>
+            </div>
           </div>
-
-          {/* 3D-like floating card */}
-          <div className="absolute bottom-0 right-0 transform translate-y-1/2 lg:translate-y-0 translate-x-1/4 lg:translate-x-0 w-32 h-32 lg:w-64 lg:h-64 rounded-lg opacity-70 lg:opacity-80 shadow-2xl blur-sm lg:blur-none transition-all duration-300 hover:blur-none hover:opacity-100">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-500/30 backdrop-blur-md rounded-lg transform rotate-6 transition-transform duration-300 group-hover:rotate-3"></div>
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-md rounded-lg transform -rotate-3 transition-transform duration-300 group-hover:rotate-0"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center p-4">
-                <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-lg lg:text-2xl font-bold">AI</div>
-                <span className="text-sm lg:text-base font-medium text-gray-700">Powered Analysis</span>
+          
+          {/* 3D Document Illustration */}
+          <div className="md:w-1/2 flex justify-center relative">
+            <div 
+              className="relative w-80 h-80 animate-fade-in animate-delay-400"
+              style={{ 
+                transform: getTransform(0.6),
+                transition: 'transform 0.2s ease-out'
+              }}
+            >
+              {/* Base document */}
+              <div className="absolute inset-0 bg-white rounded-lg shadow-lg border border-purple-100 p-6 transform rotate-3 transition-transform duration-300 hover:rotate-6">
+                <div className="w-full h-3 bg-purple-100 rounded mb-4"></div>
+                <div className="w-3/4 h-3 bg-purple-100 rounded mb-4"></div>
+                <div className="w-full h-3 bg-pink-100 rounded mb-4"></div>
+                <div className="w-2/3 h-3 bg-purple-100 rounded mb-4"></div>
+              </div>
+              
+              {/* Middle document */}
+              <div className="absolute inset-0 bg-white rounded-lg shadow-lg border border-purple-100 p-6 transform -rotate-2 hover:rotate-0 transition-transform duration-300 hover:translate-y-2" style={{ zIndex: 1 }}>
+                <div className="w-full h-3 bg-purple-100 rounded mb-4"></div>
+                <div className="w-3/4 h-3 bg-purple-100 rounded mb-4"></div>
+                <div className="w-full h-3 bg-pink-100 rounded mb-4"></div>
+                <div className="w-2/3 h-3 bg-purple-100 rounded mb-4"></div>
+                <div className="w-full h-3 bg-purple-100 rounded mb-4"></div>
+                <div className="w-1/2 h-3 bg-pink-100 rounded"></div>
+              </div>
+              
+              {/* Top document with analysis */}
+              <div className="absolute inset-0 bg-white rounded-lg shadow-lg border border-purple-100 p-6 transform rotate-1 hover:rotate-4 transition-transform duration-300 hover:translate-y-1" style={{ zIndex: 2 }}>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="w-2/3">
+                    <div className="w-3/4 h-3 bg-purple-500 rounded mb-2"></div>
+                    <div className="w-1/2 h-3 bg-purple-300 rounded"></div>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Sparkles size={14} className="text-white" />
+                  </div>
+                </div>
+                
+                <div className="space-y-3 mt-6">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-green-400 mr-2"></div>
+                    <div className="w-full h-2 bg-green-100 rounded"></div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-yellow-400 mr-2"></div>
+                    <div className="w-full h-2 bg-yellow-100 rounded"></div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-red-400 mr-2"></div>
+                    <div className="w-full h-2 bg-red-100 rounded"></div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                  <div className="w-full h-2 bg-purple-200 rounded mb-2"></div>
+                  <div className="w-3/4 h-2 bg-purple-200 rounded"></div>
+                </div>
+              </div>
+              
+              {/* Floating analysis elements */}
+              <div 
+                className="absolute -right-12 top-10 bg-white p-3 rounded-lg shadow-lg border border-purple-100 floating-element"
+                style={{ animationDelay: '0.2s', zIndex: 3 }}
+              >
+                <div className="w-24 h-2 bg-pink-200 rounded mb-2"></div>
+                <div className="w-16 h-2 bg-purple-200 rounded"></div>
+              </div>
+              
+              <div 
+                className="absolute -left-10 bottom-20 bg-white p-3 rounded-lg shadow-lg border border-purple-100 floating-element"
+                style={{ animationDelay: '1s', zIndex: 3 }}
+              >
+                <div className="w-20 h-2 bg-purple-200 rounded mb-2"></div>
+                <div className="w-12 h-2 bg-pink-200 rounded"></div>
               </div>
             </div>
           </div>
         </div>
         
-        <div 
-          className={`mt-12 md:mt-28 bg-white/70 backdrop-blur-md p-6 rounded-xl shadow-lg border border-purple-100 max-w-4xl mx-auto transition-all duration-1000 delay-500 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-semibold text-gray-800 flex items-center">
-              <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-2"></div>
-              Analysis Preview
-            </h3>
-            <span className="text-xs bg-green-100 text-green-800 py-1 px-2 rounded-full">Live Demo</span>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center border-b border-gray-200 pb-3">
-                <div className="w-8 h-8 rounded-full bg-purple-100 flex-shrink-0 flex items-center justify-center">
-                  <span className="text-purple-600 text-xs font-bold">§1</span>
-                </div>
-                <div className="ml-3 flex-grow">
-                  <span className="block text-sm font-semibold text-gray-700">Confidentiality Clause</span>
-                  <div className="flex space-x-2 mt-1">
-                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Moderate Risk</span>
-                    <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">Requires Action</span>
-                  </div>
-                </div>
-                <div className="flex-shrink-0 animate-pulse">
-                  <div className="h-8 w-8 bg-gray-200 rounded"></div>
-                </div>
-              </div>
-              
-              <div className="flex space-y-2 flex-col">
-                <div className="h-3 bg-gray-200 rounded w-full animate-pulse"></div>
-                <div className="h-3 bg-gray-200 rounded w-5/6 animate-pulse"></div>
-                <div className="h-3 bg-gray-200 rounded w-4/5 animate-pulse"></div>
-              </div>
-              
-              <div className="flex justify-between mt-3">
-                <div className="flex space-x-2">
-                  <div className="h-8 w-20 bg-purple-100 rounded-full animate-pulse flex items-center justify-center">
-                    <span className="text-xs text-purple-700">AI Insights</span>
-                  </div>
-                  <div className="h-8 w-24 bg-pink-100 rounded-full animate-pulse flex items-center justify-center">
-                    <span className="text-xs text-pink-700">Risk Analysis</span>
-                  </div>
-                </div>
-                <div className="h-8 w-12 bg-gray-200 rounded animate-pulse"></div>
-              </div>
-            </div>
-          </div>
+        {/* Scroll indicator */}
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-fade-in animate-delay-500" style={{ marginBottom: "-50px" }}>
+          <button 
+            onClick={scrollToContent} 
+            className="text-purple-500 hover:text-purple-700 transition-colors focus:outline-none group"
+            aria-label="Scroll down"
+          >
+            <p className="text-sm mb-2 opacity-80">Scroll to learn more</p>
+            <ArrowDown className="animate-bounce" />
+          </button>
         </div>
       </div>
-
-      {/* Decorative blur elements */}
-      <div className="absolute -bottom-20 -right-20 w-72 h-72 rounded-full bg-gradient-to-r from-purple-400/30 to-pink-400/30 filter blur-3xl"></div>
-      <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-gradient-to-r from-pink-400/30 to-purple-400/30 filter blur-3xl"></div>
     </section>
   );
 };

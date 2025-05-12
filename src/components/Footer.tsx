@@ -1,9 +1,17 @@
 
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
+import { HashLink } from 'react-router-hash-link';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  
+  // Smooth scroll function for HashLink
+  const scrollWithOffset = (el: HTMLElement) => {
+    const yCoordinate = el.getBoundingClientRect().top + window.pageYOffset;
+    const yOffset = -80; 
+    window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' }); 
+  };
   
   return (
     <footer className="bg-legal-navy text-white">
@@ -13,11 +21,11 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-legal-blue to-legal-electric-blue flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center">
                 <span className="text-white font-serif font-bold text-lg">L</span>
               </div>
               <span className="font-serif text-xl font-bold text-white">
-                Lega<span className="text-legal-light-blue">Lens</span>
+                Lega<span className="text-pink-400">Lens</span>
               </span>
             </Link>
             <p className="text-gray-300 text-sm">
@@ -63,16 +71,40 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/document-analysis" className="text-gray-300 hover:text-white transition-colors">Document Analysis</Link>
+                <HashLink 
+                  to="/#document-upload" 
+                  scroll={scrollWithOffset}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Document Analysis
+                </HashLink>
               </li>
               <li>
-                <Link to="/risk-identification" className="text-gray-300 hover:text-white transition-colors">Risk Identification</Link>
+                <HashLink 
+                  to="/features#risk-identification" 
+                  scroll={scrollWithOffset}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Risk Identification
+                </HashLink>
               </li>
               <li>
-                <Link to="/legal-summaries" className="text-gray-300 hover:text-white transition-colors">Legal Summaries</Link>
+                <HashLink 
+                  to="/features#legal-summaries" 
+                  scroll={scrollWithOffset}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Legal Summaries
+                </HashLink>
               </li>
               <li>
-                <Link to="/key-term-extraction" className="text-gray-300 hover:text-white transition-colors">Key Term Extraction</Link>
+                <HashLink 
+                  to="/features#key-terms" 
+                  scroll={scrollWithOffset}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  Key Term Extraction
+                </HashLink>
               </li>
             </ul>
           </div>
@@ -92,8 +124,8 @@ const Footer = () => {
         <div className="border-t border-gray-700 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">© {currentYear} LegaLens. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link to="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</Link>
+            <Link to="/privacy-policy" className="text-gray-400 hover:text-white text-sm transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="text-gray-400 hover:text-white text-sm transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

@@ -4,13 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Eye, EyeOff, Check } from "lucide-react";
+import { Loader2, Eye, EyeOff, Check, Sparkles } from "lucide-react";
+import OtpVerification from "./OtpVerification";
 
 const SignupForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -35,10 +38,20 @@ const SignupForm = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API request
+    // Simulate API request to create account (will show OTP verification step)
     setTimeout(() => {
       setIsLoading(false);
+      setShowOtpVerification(true);
       
+      toast({
+        title: "Verification code sent",
+        description: `We've sent a verification code to ${formData.email}`,
+      });
+    }, 1500);
+  };
+
+  const handleVerificationComplete = (verified: boolean) => {
+    if (verified) {
       // Store authentication token (in a real app, this would be a JWT token)
       localStorage.setItem("legalens-user", JSON.stringify({
         id: "user-" + Math.random().toString(36).substring(2, 9),
@@ -53,7 +66,9 @@ const SignupForm = () => {
       
       // Redirect to dashboard
       navigate("/dashboard");
-    }, 1500);
+    } else {
+      setShowOtpVerification(false);
+    }
   };
 
   // Password strength
@@ -65,6 +80,10 @@ const SignupForm = () => {
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
+
+  if (showOtpVerification) {
+    return <OtpVerification email={formData.email} onVerify={handleVerificationComplete} />;
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
@@ -195,11 +214,11 @@ const SignupForm = () => {
           />
           <label htmlFor="agreeTerms" className="ml-2 block text-sm text-gray-700">
             I agree to the{" "}
-            <Link to="/terms" className="text-purple-500 hover:text-purple-700">
+            <Link to="/terms-of-service" className="text-purple-500 hover:text-purple-700">
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link to="/privacy" className="text-purple-500 hover:text-purple-700">
+            <Link to="/privacy-policy" className="text-purple-500 hover:text-purple-700">
               Privacy Policy
             </Link>
           </label>
@@ -209,7 +228,7 @@ const SignupForm = () => {
       <Button 
         type="submit" 
         disabled={isLoading} 
-        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+        className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105 group"
       >
         {isLoading ? (
           <>
@@ -217,7 +236,10 @@ const SignupForm = () => {
             Creating account...
           </>
         ) : (
-          "Create account"
+          <>
+            Create account
+            <Sparkles className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:animate-pulse" />
+          </>
         )}
       </Button>
 
