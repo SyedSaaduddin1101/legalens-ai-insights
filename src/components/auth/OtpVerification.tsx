@@ -21,6 +21,16 @@ const OtpVerification = ({ email, onVerify }: OtpVerificationProps) => {
   const [countdown, setCountdown] = useState(30);
   const { toast } = useToast();
 
+  // Generate a fake OTP for demo purposes
+  useEffect(() => {
+    // In a real app, this would be sent via email/SMS
+    console.log("DEMO MODE: Your verification code is 123456");
+    toast({
+      title: "DEMO MODE",
+      description: "For demo purposes, use code: 123456",
+    });
+  }, [toast]);
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (resendDisabled && countdown > 0) {
@@ -73,6 +83,12 @@ const OtpVerification = ({ email, onVerify }: OtpVerificationProps) => {
       title: "OTP resent",
       description: `A new verification code has been sent to ${email}`,
     });
+    
+    // In demo mode, remind the user of the code
+    toast({
+      title: "DEMO MODE",
+      description: "For demo purposes, use code: 123456",
+    });
   };
 
   return (
@@ -82,9 +98,14 @@ const OtpVerification = ({ email, onVerify }: OtpVerificationProps) => {
         <p className="text-gray-600 text-sm">
           We've sent a 6-digit verification code to <span className="font-medium">{email}</span>
         </p>
-        <p className="text-gray-500 text-xs mt-1">
-          (For demo purposes, use code: 123456)
-        </p>
+        <div className="mt-2 p-3 bg-purple-50 border border-purple-100 rounded-md">
+          <p className="text-purple-700 text-xs">
+            <strong>DEMO MODE:</strong> For this demonstration, please use the code: <span className="font-mono font-bold">123456</span>
+          </p>
+          <p className="text-purple-600 text-xs mt-1">
+            In a real application, this code would be sent to your email
+          </p>
+        </div>
       </div>
 
       <div className="flex justify-center mb-6">

@@ -22,61 +22,64 @@ export const analyzeDocument = async (
     
     // This should be a server-side API call in production
     // Client-side API calls with API keys are not secure
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are a legal document analyzer. Analyze the following ${documentType || "legal document"} and provide: 
-              1. A plain language explanation
-              2. Key terms with explanations
-              3. Risk identification with severity levels (low, medium, high)
-              4. A brief summary
-              
-              Format your response as JSON with the following structure:
-              {
-                "plainLanguage": "string",
-                "keyTerms": [{"term": "string", "explanation": "string"}],
-                "risks": [{"title": "string", "description": "string", "severity": "low|medium|high"}],
-                "summary": "string"
-              }
-              
-              Only return the JSON with no additional text.`,
-          },
-          {
-            role: "user",
-            content: text,
-          },
-        ],
-        temperature: 0.2,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    
-    // Parse the JSON from the response
-    // In a real app, we would handle various error cases
     try {
+      console.log("Attempting to analyze document with GPT-4...");
+      
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini", // Using a more available model that's less likely to have quota issues
+          messages: [
+            {
+              role: "system",
+              content: `You are a legal document analyzer. Analyze the following ${documentType || "legal document"} and provide: 
+                1. A plain language explanation
+                2. Key terms with explanations
+                3. Risk identification with severity levels (low, medium, high)
+                4. A brief summary
+                
+                Format your response as JSON with the following structure:
+                {
+                  "plainLanguage": "string",
+                  "keyTerms": [{"term": "string", "explanation": "string"}],
+                  "risks": [{"title": "string", "description": "string", "severity": "low|medium|high"}],
+                  "summary": "string"
+                }
+                
+                Only return the JSON with no additional text.`,
+            },
+            {
+              role: "user",
+              content: text,
+            },
+          ],
+          temperature: 0.2,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`API error: ${response.status}`);
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("GPT-4 analysis completed successfully");
+      
+      // Parse the JSON from the response
       const content = data.choices[0].message.content;
       const result = JSON.parse(content);
       return result;
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", parseError);
-      throw new Error("Failed to parse analysis results");
+    } catch (apiError) {
+      console.error("Error with OpenAI API:", apiError);
+      throw new Error("Failed to connect to AI service. Using fallback data.");
     }
   } catch (error) {
     console.error("Error analyzing document:", error);
-    toast.error("Failed to analyze document. Please try again.");
+    toast.error("Failed to analyze document. Using demo data.");
     
     // Return mock data in case of error for demo purposes
     return {

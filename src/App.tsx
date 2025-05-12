@@ -18,6 +18,7 @@ import LearnMore from "./pages/LearnMore";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Admin from "./pages/Admin";
+import Logout from "./pages/Logout";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,14 @@ const App = () => (
             } 
           />
           <Route 
+            path="/dashboard/*" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/try-now" 
             element={
               <ProtectedRoute>
@@ -64,6 +73,7 @@ const App = () => (
               </ProtectedRoute>
             } 
           />
+          <Route path="/logout" element={<Logout />} />
           
           {/* Catch-all 404 route */}
           <Route path="*" element={<NotFound />} />

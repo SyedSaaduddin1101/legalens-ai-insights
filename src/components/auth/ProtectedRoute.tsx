@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check authentication - replace with actual auth logic when integrated
+    // Check authentication
     const userLoggedIn = localStorage.getItem("legalens-user");
     setIsAuthenticated(!!userLoggedIn);
     
@@ -25,7 +25,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         variant: "destructive",
       });
     }
-  }, [toast]);
+  }, [location.pathname, toast]);
 
   if (isAuthenticated === null) {
     return (
