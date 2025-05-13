@@ -1,3 +1,4 @@
+
 import React, { ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -15,7 +16,7 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { isMobile } = useIsMobile();
+  const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   const { toast } = useToast();
   
