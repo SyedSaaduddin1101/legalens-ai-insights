@@ -1,5 +1,4 @@
-
-import { FileText, Upload, ArrowUp, AlertTriangle, FileUpload } from "lucide-react";
+import { FileText, Upload, ArrowUp, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import DocumentCard from "../components/dashboard/DocumentCard";
@@ -153,7 +152,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Document Upload Section - More Prominent */}
+      {/* Document Upload Section */}
       <div className="mb-8 relative overflow-hidden bg-gradient-to-r from-legal-blue to-legal-light-blue rounded-xl p-6 md:p-8 text-white animate-fade-in">
         <div className="absolute top-0 right-0 w-64 h-64 -mr-10 -mt-10 opacity-20">
           <div className="w-full h-full bg-white rounded-full blur-3xl"></div>
@@ -186,7 +185,7 @@ const Dashboard = () => {
                 </>
               ) : selectedFile ? (
                 <>
-                  <FileUpload className="mr-2 h-5 w-5" />
+                  <Upload className="mr-2 h-5 w-5" />
                   Upload {selectedFile.name.substring(0, 15)}...
                 </>
               ) : (

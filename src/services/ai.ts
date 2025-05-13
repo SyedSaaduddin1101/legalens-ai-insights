@@ -94,7 +94,7 @@ export const analyzeDocument = async (
   } catch (error) {
     console.error("Error analyzing document:", error);
     toast.error("Failed to analyze document. Using demo data.");
-    return generateMockAnalysis(text, documentType);
+    return generateMockAnalysis("Error occurred during analysis", documentType);
   }
 };
 
