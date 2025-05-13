@@ -18,7 +18,7 @@ export const analyzeDocument = async (
   try {
     // In production, we would extract text from the document using a PDF parser or OCR
     // For demo purposes, we'll simulate this with the provided text
-    const text = documentText || "This is a sample legal document text for analysis.";
+    const textContent = documentText || "This is a sample legal document text for analysis.";
     
     // This should be a server-side API call in production
     // Client-side API keys are not secure
@@ -62,7 +62,7 @@ export const analyzeDocument = async (
             },
             {
               role: "user",
-              content: text,
+              content: textContent,
             },
           ],
           temperature: 0.2,
@@ -84,12 +84,12 @@ export const analyzeDocument = async (
       */
       
       // For demo purposes, return mock data
-      return generateMockAnalysis(text, documentType);
+      return generateMockAnalysis(textContent, documentType);
       
     } catch (apiError) {
       console.error("Error with OpenAI API:", apiError);
       toast.error("API quota exceeded. Using demo data instead.");
-      return generateMockAnalysis(text, documentType);
+      return generateMockAnalysis(textContent, documentType);
     }
   } catch (error) {
     console.error("Error analyzing document:", error);

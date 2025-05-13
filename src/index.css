@@ -66,10 +66,26 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 270 95% 65%;
     --radius: 0.5rem;
-    --legal-navy: 210 50% 20%;
-    --legal-blue: 220 90% 50%;
-    --legal-light-blue: 210 90% 60%;
-    --legal-electric-blue: 195 100% 50%;
+    
+    /* Custom color variables */
+    --electric-purple: 271 77% 53%;
+    --neon-blue: 258 100% 44%;
+    --jet-black: 0 0% 6%;
+    --soft-silver: 0 0% 85%;
+    --midnight-blue: 222 47% 11%;
+    --cyan: 187 100% 42%;
+    --bright-green: 142 70% 45%;
+    --off-white: 210 40% 98%;
+    --charcoal: 0 0% 12%;
+    --electric-lime: 84 100% 70%;
+    --aqua-blue: 180 100% 50%;
+    --light-gray: 0 0% 93%;
+    --laser-pink: 323 100% 59%;
+    --ice-white: 220 14% 96%;
+    --deep-navy: 215 30% 18%;
+    --teal: 173 58% 39%;
+    --soft-orange: 25 95% 53%;
+    --white: 210 20% 98%;
   }
  
   .dark {
@@ -97,7 +113,7 @@
 
 @layer components {
   .glass-card {
-    @apply backdrop-blur-md bg-white/80 rounded-xl shadow-lg border border-purple-100;
+    @apply backdrop-blur-md bg-white/80 dark:bg-[#0F0F0F]/80 rounded-xl shadow-lg border border-[#8E2DE2]/10;
   }
   
   .magical-border {
@@ -106,7 +122,7 @@
   
   .magical-border::before {
     content: "";
-    @apply absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-500 blur opacity-40 transition-opacity duration-300;
+    @apply absolute -inset-1 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] blur opacity-40 transition-opacity duration-300;
   }
   
   .magical-border:hover::before {
@@ -114,7 +130,7 @@
   }
   
   .magical-card {
-    @apply relative bg-white p-6 rounded-xl z-10;
+    @apply relative bg-white dark:bg-[#0F0F0F] p-6 rounded-xl z-10;
   }
   
   .floating-element {
@@ -127,7 +143,7 @@
   
   .glow-effect::after {
     content: "";
-    @apply absolute inset-0 rounded-full bg-purple-500 blur-xl opacity-40 animate-[pulse-glow_3s_ease-in-out_infinite];
+    @apply absolute inset-0 rounded-full bg-[#8E2DE2] blur-xl opacity-40 animate-[pulse-glow_3s_ease-in-out_infinite];
     z-index: -1;
   }
   
@@ -146,6 +162,26 @@
   .sparkle {
     @apply absolute w-1 h-1 bg-white rounded-full;
     animation: sparkling 1.5s ease-in-out infinite;
+  }
+
+  .neon-button {
+    @apply relative inline-flex items-center justify-center px-6 py-3 overflow-hidden font-bold rounded-md group bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] text-white shadow-[0_0_15px_rgba(74,0,224,0.5)] hover:shadow-[0_0_25px_rgba(74,0,224,0.7)] transition-all duration-300 transform hover:scale-105;
+  }
+  
+  .neon-border {
+    @apply border border-[#8E2DE2]/30 shadow-[0_0_10px_rgba(142,45,226,0.3)];
+  }
+
+  .glass-bg {
+    @apply bg-white/80 dark:bg-[#0F0F0F]/80 backdrop-blur-md;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(142,45,226,0.5)];
   }
 }
 
@@ -197,3 +233,4 @@ body {
     transform: translateY(0);
   }
 }
+

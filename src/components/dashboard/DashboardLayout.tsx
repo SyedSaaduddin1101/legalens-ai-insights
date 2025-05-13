@@ -3,7 +3,7 @@ import React, { ReactNode, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FileText, Home, Settings, Users, BarChart, LogOut, 
-  Menu, X, ChevronRight, Shield, Bell 
+  Menu, X, ChevronRight, Shield, Bell, Upload
 } from 'lucide-react';
 import Logo from '../Logo';
 import { Button } from "@/components/ui/button";
@@ -35,24 +35,24 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const notificationCount = 2; // This would come from a real notification system
 
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100">
+    <div className="h-screen flex overflow-hidden bg-[#F8FAFC] dark:bg-[#0F0F0F]">
       {/* Mobile sidebar toggle */}
       {isMobile && (
         <div className="fixed top-4 left-4 z-50">
           <Button
             variant="ghost"
             size="icon"
-            className="bg-white shadow-md rounded-full"
+            className="bg-white dark:bg-[#1E1E1E] shadow-md rounded-full"
             onClick={toggleSidebar}
           >
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            {sidebarOpen ? <X size={20} className="text-[#4A00E0]" /> : <Menu size={20} className="text-[#4A00E0]" />}
           </Button>
         </div>
       )}
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-40 flex-shrink-0 w-64 flex flex-col bg-white shadow-lg transition-transform duration-300 ease-in-out transform",
+        "fixed inset-y-0 left-0 z-40 flex-shrink-0 w-64 flex flex-col bg-white dark:bg-[#1E293B] shadow-lg transition-transform duration-300 ease-in-out transform",
         isMobile ? (sidebarOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
       )}>
         <div className="flex-shrink-0 px-4 py-6 flex items-center justify-between">
@@ -62,7 +62,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               variant="ghost"
               size="icon"
               onClick={toggleSidebar}
-              className="rounded-full"
+              className="rounded-full text-[#4A00E0] hover:bg-[#4A00E0]/10"
             >
               <X size={20} />
             </Button>
@@ -73,23 +73,30 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <nav className="flex-1 px-4 py-4 space-y-1">
             <Link
               to="/dashboard"
-              className="flex items-center px-4 py-3 text-gray-800 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-colors group"
+              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
             >
-              <Home className="mr-3 h-5 w-5 text-gray-500 group-hover:text-purple-500" />
+              <Home className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
               <span>Dashboard</span>
             </Link>
             <Link
               to="/dashboard/documents"
-              className="flex items-center px-4 py-3 text-gray-800 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-colors group"
+              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
             >
-              <FileText className="mr-3 h-5 w-5 text-gray-500 group-hover:text-purple-500" />
+              <FileText className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
               <span>My Documents</span>
             </Link>
             <Link
-              to="/dashboard/account"
-              className="flex items-center px-4 py-3 text-gray-800 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-colors group"
+              to="/try-now"
+              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
             >
-              <Settings className="mr-3 h-5 w-5 text-gray-500 group-hover:text-purple-500" />
+              <Upload className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
+              <span>Upload Document</span>
+            </Link>
+            <Link
+              to="/dashboard/account"
+              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
+            >
+              <Settings className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
               <span>Account Settings</span>
             </Link>
             
@@ -103,23 +110,23 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </div>
                 <Link
                   to="/admin"
-                  className="flex items-center px-4 py-3 text-gray-800 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-colors group"
+                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
                 >
-                  <Shield className="mr-3 h-5 w-5 text-gray-500 group-hover:text-purple-500" />
+                  <Shield className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
                   <span>Admin Panel</span>
                 </Link>
                 <Link
                   to="/admin/users"
-                  className="flex items-center px-4 py-3 text-gray-800 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-colors group"
+                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
                 >
-                  <Users className="mr-3 h-5 w-5 text-gray-500 group-hover:text-purple-500" />
+                  <Users className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
                   <span>User Management</span>
                 </Link>
                 <Link
                   to="/admin/analytics"
-                  className="flex items-center px-4 py-3 text-gray-800 hover:bg-purple-50 hover:text-purple-700 rounded-md transition-colors group"
+                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
                 >
-                  <BarChart className="mr-3 h-5 w-5 text-gray-500 group-hover:text-purple-500" />
+                  <BarChart className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
                   <span>Analytics</span>
                 </Link>
               </>
@@ -127,10 +134,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </nav>
         </div>
 
-        <div className="flex-shrink-0 px-4 py-6 border-t border-gray-200">
+        <div className="flex-shrink-0 px-4 py-6 border-t border-gray-200 dark:border-[#1E293B]/80">
           <Button
             variant="ghost"
-            className="w-full justify-start text-red-500 hover:bg-red-50 hover:text-red-700"
+            className="w-full justify-start text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700"
             onClick={handleLogout}
           >
             <LogOut className="mr-3 h-5 w-5" />
@@ -145,26 +152,26 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         sidebarOpen && !isMobile ? "ml-64" : "ml-0"
       )}>
         {/* Header */}
-        <header className="bg-white shadow-sm z-10">
+        <header className="bg-white dark:bg-[#1E293B] shadow-sm z-10">
           <div className="py-4 px-6 flex items-center justify-between">
             <div className="flex items-center">
               {!sidebarOpen && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="mr-4 rounded-full"
+                  className="mr-4 rounded-full text-[#4A00E0] hover:bg-[#4A00E0]/10"
                   onClick={toggleSidebar}
                 >
                   <Menu size={20} />
                 </Button>
               )}
-              <h1 className="text-xl font-serif font-bold text-gray-900">Dashboard</h1>
+              <h1 className="text-xl font-serif font-bold text-gray-900 dark:text-[#F8FAFC]">Dashboard</h1>
             </div>
             
             <div className="flex items-center">
               {/* Notifications */}
               <div className="relative mr-4">
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full text-[#4A00E0]">
                   <Bell size={20} />
                   {notificationCount > 0 && (
                     <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
@@ -185,7 +192,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <nav className="mb-6 flex" aria-label="Breadcrumb">
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
               <li className="inline-flex items-center">
-                <Link to="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-purple-600">
+                <Link to="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#8E2DE2]">
                   <Home className="mr-2 h-4 w-4" />
                   Dashboard
                 </Link>

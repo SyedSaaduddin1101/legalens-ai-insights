@@ -48,6 +48,12 @@ const DocumentUpload = () => {
           // In a real app, we would use PDF.js or a similar library to extract text
           setDocumentText("Sample extracted text from document for demonstration purposes.");
         }
+
+        toast({
+          title: "File selected",
+          description: `${selectedFile.name} is ready for analysis`,
+          variant: "default",
+        });
       } else {
         toast({
           variant: "destructive",
@@ -75,6 +81,12 @@ const DocumentUpload = () => {
           // In a real app, we would use PDF.js or similar to extract text
           setDocumentText("Sample extracted text from document for demonstration purposes.");
         }
+
+        toast({
+          title: "File uploaded",
+          description: `${droppedFile.name} is ready for analysis`,
+          variant: "default",
+        });
       } else {
         toast({
           variant: "destructive",
@@ -166,23 +178,23 @@ const DocumentUpload = () => {
   // Show login prompt for non-authenticated users
   const renderLoginPrompt = () => (
     <div className="text-center py-10">
-      <div className="bg-white/80 backdrop-blur-md p-8 rounded-lg border border-purple-100 shadow-lg max-w-lg mx-auto animate-fade-in">
-        <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+      <div className="bg-gradient-to-r from-[#0F0F0F] to-[#1E1E1E] p-8 rounded-lg border border-[#4A00E0]/30 shadow-lg max-w-lg mx-auto animate-fade-in">
+        <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">
           Sign in to Analyze Documents
         </h3>
-        <p className="text-gray-600 mb-6">
+        <p className="text-[#F8FAFC] mb-6">
           Create an account or sign in to access our AI-powered legal document analysis features.
         </p>
         <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 justify-center">
           <Button 
-            className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-[0_0_15px_rgba(74,0,224,0.5)]"
             onClick={() => window.location.href = "/login"}
           >
             Sign In
           </Button>
           <Button 
             variant="outline" 
-            className="border-purple-200 hover:bg-purple-50 hover:text-purple-700 transition-all duration-300"
+            className="border-[#8E2DE2] text-[#8E2DE2] hover:bg-[#8E2DE2]/10 hover:text-[#4A00E0] transition-all duration-300"
             onClick={() => window.location.href = "/signup"}
           >
             Create Account
@@ -197,16 +209,14 @@ const DocumentUpload = () => {
     return renderLoginPrompt();
   }
 
-  // If on try-now page but not authenticated, redirect happens via ProtectedRoute
-  
   return (
     <section className="section-padding animate-fade-in" id="document-upload">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">
             Analyze Your Document
           </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-[#0F172A] dark:text-[#F8FAFC] max-w-2xl mx-auto">
             Upload a contract or legal document to receive an instant AI-powered analysis including plain language explanation, key terms, and risk identification.
           </p>
         </div>
@@ -214,13 +224,13 @@ const DocumentUpload = () => {
         <div className="max-w-4xl mx-auto">
           {!file ? (
             <div
-              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center glass-card cursor-pointer hover:border-purple-400 transition-colors relative overflow-hidden group"
+              className="border-2 border-dashed border-[#4A00E0]/30 rounded-lg p-12 text-center cursor-pointer hover:border-[#8E2DE2] transition-colors relative overflow-hidden group bg-gradient-to-br from-[#F8FAFC] to-[#EDEDED] dark:from-[#1E1E1E]/50 dark:to-[#0F0F0F]/70"
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onClick={() => document.getElementById("file-upload")?.click()}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="absolute -inset-full bg-gradient-to-r from-purple-200/0 via-purple-200/10 to-pink-200/0 top-1/2 group-hover:animate-[shimmer_2s_ease-in-out_infinite] z-0"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8E2DE2]/5 to-[#4A00E0]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="absolute -inset-full bg-gradient-to-r from-[#8E2DE2]/0 via-[#8E2DE2]/10 to-[#4A00E0]/0 top-1/2 group-hover:animate-[shimmer_2s_ease-in-out_infinite] z-0"></div>
               
               <input
                 id="file-upload"
@@ -231,38 +241,38 @@ const DocumentUpload = () => {
                 onChange={handleFileChange}
               />
               <div className="relative z-10">
-                <Upload size={48} className="mx-auto mb-4 text-purple-500" />
-                <h3 className="text-xl font-semibold mb-2 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Upload Your Document</h3>
-                <p className="text-gray-500 mb-4">
+                <Upload size={48} className="mx-auto mb-4 text-[#8E2DE2]" />
+                <h3 className="text-xl font-semibold mb-2 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">Upload Your Document</h3>
+                <p className="text-[#1E293B] dark:text-[#D9D9D9] mb-4">
                   Drag and drop your file here, or click to browse
                 </p>
-                <p className="text-gray-400 text-sm">
+                <p className="text-[#1E293B]/60 dark:text-[#D9D9D9]/60 text-sm">
                   Supports PDF, DOC, DOCX, TXT (Max 10MB)
                 </p>
               </div>
             </div>
           ) : (
-            <div className="glass-card p-6 border border-purple-100 shadow-lg rounded-lg bg-white/80 backdrop-blur-md animate-fade-in">
+            <div className="p-6 border border-[#8E2DE2]/20 shadow-lg rounded-lg bg-gradient-to-br from-white to-[#F3F4F6] dark:from-[#1E1E1E] dark:to-[#0F0F0F] backdrop-blur-md animate-fade-in">
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center">
-                  <div className="bg-purple-100 p-2 rounded-lg mr-4">
-                    <File size={24} className="text-purple-500" />
+                  <div className="bg-[#8E2DE2]/10 p-2 rounded-lg mr-4">
+                    <File size={24} className="text-[#8E2DE2]" />
                   </div>
                   <div>
-                    <p className="font-medium">{file.name}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-[#0F172A] dark:text-[#F8FAFC]">{file.name}</p>
+                    <p className="text-sm text-[#1E293B]/70 dark:text-[#D9D9D9]/70">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={clearFile} className="hover:bg-purple-50">
+                <Button variant="ghost" size="icon" onClick={clearFile} className="hover:bg-[#8E2DE2]/10 text-[#1E293B] dark:text-[#D9D9D9]">
                   <X size={20} />
                 </Button>
               </div>
               
               {!analysisResult && !isAnalyzing && (
                 <Button 
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105" 
+                  className="w-full bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] hover:opacity-90 transition-all duration-300 transform hover:scale-[1.01] shadow-[0_0_15px_rgba(74,0,224,0.3)]" 
                   onClick={analyzeDocumentHandler}
                 >
                   Analyze Document
@@ -272,47 +282,47 @@ const DocumentUpload = () => {
               {isAnalyzing && (
                 <div className="text-center py-8">
                   <div className="relative mx-auto w-16 h-16 mb-4">
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full blur-xl opacity-70 animate-pulse"></div>
-                    <Loader2 size={40} className="animate-spin mx-auto relative z-10 text-purple-600" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] rounded-full blur-xl opacity-70 animate-pulse"></div>
+                    <Loader2 size={40} className="animate-spin mx-auto relative z-10 text-[#8E2DE2]" />
                   </div>
-                  <p className="text-gray-600">Analyzing your document...</p>
-                  <p className="text-sm text-gray-500 mt-2">This may take a minute</p>
+                  <p className="text-[#1E293B] dark:text-[#D9D9D9]">Analyzing your document...</p>
+                  <p className="text-sm text-[#1E293B]/60 dark:text-[#D9D9D9]/60 mt-2">This may take a minute</p>
                 </div>
               )}
               
               {analysisResult && (
                 <div className="mt-6 animate-fade-in">
                   <div className="mb-8">
-                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Plain Language Explanation</h3>
-                    <div className="bg-white rounded-lg p-4 border border-purple-100 shadow-sm">
-                      <p className="text-gray-700">{analysisResult.plainLanguage}</p>
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">Plain Language Explanation</h3>
+                    <div className="bg-white dark:bg-[#0F0F0F]/50 rounded-lg p-4 border border-[#8E2DE2]/20 shadow-sm">
+                      <p className="text-[#1E293B] dark:text-[#D9D9D9]">{analysisResult.plainLanguage}</p>
                     </div>
                   </div>
                   
                   <div className="mb-8">
-                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Key Terms</h3>
-                    <div className="bg-white rounded-lg border border-purple-100 shadow-sm divide-y divide-purple-50">
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">Key Terms</h3>
+                    <div className="bg-white dark:bg-[#0F0F0F]/50 rounded-lg border border-[#8E2DE2]/20 shadow-sm divide-y divide-[#8E2DE2]/10">
                       {analysisResult.keyTerms.map((term, index) => (
-                        <div key={index} className="p-4 hover:bg-purple-50/50 transition-colors">
-                          <h4 className="font-medium text-purple-700">{term.term}</h4>
-                          <p className="text-gray-700 mt-1">{term.explanation}</p>
+                        <div key={index} className="p-4 hover:bg-[#8E2DE2]/5 transition-colors">
+                          <h4 className="font-medium text-[#8E2DE2]">{term.term}</h4>
+                          <p className="text-[#1E293B] dark:text-[#D9D9D9] mt-1">{term.explanation}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                   
                   <div className="mb-8">
-                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Risk Identification</h3>
-                    <div className="bg-white rounded-lg border border-purple-100 shadow-sm divide-y divide-purple-50">
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">Risk Identification</h3>
+                    <div className="bg-white dark:bg-[#0F0F0F]/50 rounded-lg border border-[#8E2DE2]/20 shadow-sm divide-y divide-[#8E2DE2]/10">
                       {analysisResult.risks.map((risk, index) => (
-                        <div key={index} className="p-4 hover:bg-purple-50/50 transition-colors">
+                        <div key={index} className="p-4 hover:bg-[#8E2DE2]/5 transition-colors">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="font-medium text-gray-800">{risk.title}</h4>
+                            <h4 className="font-medium text-[#1E293B] dark:text-[#D9D9D9]">{risk.title}</h4>
                             <span 
                               className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                risk.severity === 'high' ? 'bg-red-100 text-red-800' :
-                                risk.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-green-100 text-green-800'
+                                risk.severity === 'high' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
+                                risk.severity === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                                'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                               }`}
                             >
                               {risk.severity === 'high' ? 'High Risk' :
@@ -320,22 +330,22 @@ const DocumentUpload = () => {
                                'Low Risk'}
                             </span>
                           </div>
-                          <p className="text-gray-700">{risk.description}</p>
+                          <p className="text-[#1E293B] dark:text-[#D9D9D9]">{risk.description}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                   
                   <div className="mb-6">
-                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Summary</h3>
-                    <div className="bg-white rounded-lg p-4 border border-purple-100 shadow-sm">
-                      <p className="text-gray-700">{analysisResult.summary}</p>
+                    <h3 className="font-semibold text-lg mb-3 bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] bg-clip-text text-transparent">Summary</h3>
+                    <div className="bg-white dark:bg-[#0F0F0F]/50 rounded-lg p-4 border border-[#8E2DE2]/20 shadow-sm">
+                      <p className="text-[#1E293B] dark:text-[#D9D9D9]">{analysisResult.summary}</p>
                     </div>
                   </div>
                   
                   <Button 
                     onClick={downloadSummary} 
-                    className="w-full bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] hover:opacity-90 transition-all duration-300 transform hover:scale-[1.01] shadow-[0_0_15px_rgba(74,0,224,0.3)]"
                   >
                     <Download size={16} className="mr-2" />
                     Download Summary
