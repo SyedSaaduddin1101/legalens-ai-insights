@@ -1,5 +1,5 @@
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   FileText, Home, Settings, Users, BarChart, LogOut, 
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
+import NotificationsPanel from './NotificationsPanel';
+import { motion } from 'framer-motion';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -18,13 +20,23 @@ interface DashboardLayoutProps {
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const { toast } = useToast();
   
   // Check if user is admin - in a real app this would come from auth state
   const isAdmin = localStorage.getItem("legalens-user-role") === "admin";
+  const isLoggedIn = !!localStorage.getItem("legalens-user");
+
+  // Check if user is logged in and redirect if not
+  useEffect(() => {
+    if (!isLoggedIn) {
+      window.location.href = "/login";
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("legalens-user");
+    localStorage.removeItem("legalens-user-role");
     window.location.href = "/logout";
   };
 
@@ -32,29 +44,96 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const toggleNotifications = () => {
+    setNotificationsOpen(!notificationsOpen);
+  };
+
+  const navItems = [
+    { path: '/dashboard', name: 'Dashboard', icon: Home },
+    { path: '/dashboard/documents', name: 'My Documents', icon: FileText },
+    { path: '/try-now', name: 'Upload Document', icon: Upload },
+    { path: '/dashboard/account', name: 'Account Settings', icon: Settings },
+  ];
+
+  const adminItems = [
+    { path: '/admin', name: 'Admin Panel', icon: Shield },
+    { path: '/admin/users', name: 'User Management', icon: Users },
+    { path: '/admin/analytics', name: 'Analytics', icon: BarChart },
+  ];
+
   const notificationCount = 2; // This would come from a real notification system
+
+  const sidebarVariants = {
+    open: { 
+      x: 0,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    closed: { 
+      x: "-100%",
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 30
+      }
+    }
+  };
+
+  const navItemVariants = {
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 300, damping: 24 }
+    },
+    closed: { opacity: 0, y: 20, transition: { duration: 0.2 } }
+  };
+
+  const staggerChildren = {
+    open: {
+      transition: { staggerChildren: 0.07, delayChildren: 0.2 }
+    },
+    closed: {
+      transition: { staggerChildren: 0.05, staggerDirection: -1 }
+    }
+  };
 
   return (
     <div className="h-screen flex overflow-hidden bg-[#F8FAFC] dark:bg-[#0F0F0F]">
       {/* Mobile sidebar toggle */}
       {isMobile && (
-        <div className="fixed top-4 left-4 z-50">
+        <motion.div 
+          className="fixed top-4 left-4 z-50"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+        >
           <Button
             variant="ghost"
             size="icon"
             className="bg-white dark:bg-[#1E1E1E] shadow-md rounded-full"
             onClick={toggleSidebar}
           >
-            {sidebarOpen ? <X size={20} className="text-[#4A00E0]" /> : <Menu size={20} className="text-[#4A00E0]" />}
+            {sidebarOpen ? 
+              <X size={20} className="text-[#4A00E0]" /> : 
+              <Menu size={20} className="text-[#4A00E0]" />
+            }
           </Button>
-        </div>
+        </motion.div>
       )}
 
       {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-40 flex-shrink-0 w-64 flex flex-col bg-white dark:bg-[#1E293B] shadow-lg transition-transform duration-300 ease-in-out transform",
-        isMobile ? (sidebarOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
-      )}>
+      <motion.div 
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex-shrink-0 w-64 flex flex-col bg-white dark:bg-[#1E293B] shadow-lg",
+          isMobile ? "transition-none" : "transition-transform duration-300 ease-in-out transform"
+        )}
+        variants={isMobile ? sidebarVariants : {}}
+        initial={isMobile ? "closed" : false}
+        animate={isMobile ? (sidebarOpen ? "open" : "closed") : false}
+      >
         <div className="flex-shrink-0 px-4 py-6 flex items-center justify-between">
           <Logo size="md" />
           {isMobile && (
@@ -70,68 +149,49 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
 
         <div className="flex-1 flex flex-col overflow-y-auto">
-          <nav className="flex-1 px-4 py-4 space-y-1">
-            <Link
-              to="/dashboard"
-              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-            >
-              <Home className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              to="/dashboard/documents"
-              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-            >
-              <FileText className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-              <span>My Documents</span>
-            </Link>
-            <Link
-              to="/try-now"
-              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-            >
-              <Upload className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-              <span>Upload Document</span>
-            </Link>
-            <Link
-              to="/dashboard/account"
-              className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-            >
-              <Settings className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-              <span>Account Settings</span>
-            </Link>
+          <motion.nav 
+            className="flex-1 px-4 py-4 space-y-1"
+            variants={staggerChildren}
+            initial="closed"
+            animate="open"
+          >
+            {navItems.map((item) => (
+              <motion.div key={item.path} variants={navItemVariants}>
+                <Link
+                  to={item.path}
+                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
+                >
+                  <item.icon className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
+                  <span>{item.name}</span>
+                </Link>
+              </motion.div>
+            ))}
             
             {/* Admin section - only visible to admins */}
             {isAdmin && (
               <>
-                <div className="mt-8 mb-2 px-4">
+                <motion.div 
+                  className="mt-8 mb-2 px-4"
+                  variants={navItemVariants}
+                >
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                     Administration
                   </p>
-                </div>
-                <Link
-                  to="/admin"
-                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-                >
-                  <Shield className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-                  <span>Admin Panel</span>
-                </Link>
-                <Link
-                  to="/admin/users"
-                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-                >
-                  <Users className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-                  <span>User Management</span>
-                </Link>
-                <Link
-                  to="/admin/analytics"
-                  className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
-                >
-                  <BarChart className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
-                  <span>Analytics</span>
-                </Link>
+                </motion.div>
+                {adminItems.map((item) => (
+                  <motion.div key={item.path} variants={navItemVariants}>
+                    <Link
+                      to={item.path}
+                      className="flex items-center px-4 py-3 text-gray-800 dark:text-[#F8FAFC] hover:bg-[#8E2DE2]/10 hover:text-[#8E2DE2] dark:hover:text-[#8E2DE2] rounded-md transition-colors group"
+                    >
+                      <item.icon className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400 group-hover:text-[#8E2DE2]" />
+                      <span>{item.name}</span>
+                    </Link>
+                  </motion.div>
+                ))}
               </>
             )}
-          </nav>
+          </motion.nav>
         </div>
 
         <div className="flex-shrink-0 px-4 py-6 border-t border-gray-200 dark:border-[#1E293B]/80">
@@ -144,15 +204,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <span>Log out</span>
           </Button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Main content */}
       <div className={cn(
-        "flex-1 flex flex-col overflow-y-auto transition-all duration-300",
+        "flex-1 flex flex-col overflow-y-auto transition-all duration-500",
         sidebarOpen && !isMobile ? "ml-64" : "ml-0"
       )}>
         {/* Header */}
-        <header className="bg-white dark:bg-[#1E293B] shadow-sm z-10">
+        <motion.header 
+          className="bg-white dark:bg-[#1E293B] shadow-sm z-10"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
+        >
           <div className="py-4 px-6 flex items-center justify-between">
             <div className="flex items-center">
               {!sidebarOpen && (
@@ -165,31 +230,64 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <Menu size={20} />
                 </Button>
               )}
-              <h1 className="text-xl font-serif font-bold text-gray-900 dark:text-[#F8FAFC]">Dashboard</h1>
+              <motion.h1 
+                className="text-xl font-serif font-bold text-gray-900 dark:text-[#F8FAFC]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                Dashboard
+              </motion.h1>
             </div>
             
             <div className="flex items-center">
               {/* Notifications */}
               <div className="relative mr-4">
-                <Button variant="ghost" size="icon" className="rounded-full text-[#4A00E0]">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full text-[#4A00E0] hover:bg-[#4A00E0]/10"
+                  onClick={toggleNotifications}
+                >
                   <Bell size={20} />
                   {notificationCount > 0 && (
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center">
+                    <motion.span 
+                      className="absolute top-0 right-0 bg-red-500 text-white text-xs font-medium rounded-full h-5 w-5 flex items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                    >
                       {notificationCount}
-                    </span>
+                    </motion.span>
                   )}
                 </Button>
               </div>
               
-              {/* User dropdown would go here */}
+              {/* User avatar would go here */}
+              <motion.div 
+                className="h-8 w-8 rounded-full bg-gradient-to-r from-[#8E2DE2] to-[#4A00E0] flex items-center justify-center text-white font-medium"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {isLoggedIn ? "J" : "?"}
+              </motion.div>
             </div>
           </div>
-        </header>
+        </motion.header>
+
+        {/* Notifications Panel */}
+        <NotificationsPanel isOpen={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
 
         {/* Page content */}
         <main className="flex-1 p-6">
           {/* Breadcrumb */}
-          <nav className="mb-6 flex" aria-label="Breadcrumb">
+          <motion.nav 
+            className="mb-6 flex" 
+            aria-label="Breadcrumb"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
             <ol className="inline-flex items-center space-x-1 md:space-x-3">
               <li className="inline-flex items-center">
                 <Link to="/dashboard" className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-[#8E2DE2]">
@@ -204,10 +302,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 </div>
               </li>
             </ol>
-          </nav>
+          </motion.nav>
           
-          {/* Page content */}
-          {children}
+          {/* Page content - Wrapped with motion */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
+          >
+            {children}
+          </motion.div>
         </main>
       </div>
     </div>

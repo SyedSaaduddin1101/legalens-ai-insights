@@ -16,6 +16,14 @@ export const analyzeDocument = async (
   documentType: string
 ): Promise<AnalysisResult> => {
   try {
+    // Check if user is logged in
+    const isLoggedIn = localStorage.getItem("legalens-user");
+    
+    if (!isLoggedIn) {
+      toast.error("Please sign in to analyze documents");
+      throw new Error("Authentication required");
+    }
+    
     // In production, we would extract text from the document using a PDF parser or OCR
     // For demo purposes, we'll simulate this with the provided text
     const textContent = documentText || "This is a sample legal document text for analysis.";
