@@ -1,6 +1,6 @@
 
 import { useState, ReactNode } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   FileText,
@@ -14,6 +14,7 @@ import {
   Bell,
   Search,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -23,6 +24,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const navigation = [
     {
@@ -51,6 +54,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const toggleUserMenu = () => {
     setIsUserMenuOpen(!isUserMenuOpen);
+  };
+
+  const handleLogout = () => {
+    navigate('/logout');
   };
 
   return (
@@ -93,6 +100,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <Button
               variant="ghost"
               className="w-full justify-start text-gray-300 hover:text-white hover:bg-white/5"
+              onClick={handleLogout}
             >
               <LogOut className="mr-3 h-5 w-5" />
               Sign out
@@ -150,6 +158,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button
                 variant="ghost"
                 className="w-full justify-start text-gray-300 hover:text-white hover:bg-white/5"
+                onClick={handleLogout}
               >
                 <LogOut className="mr-3 h-5 w-5" />
                 Sign out

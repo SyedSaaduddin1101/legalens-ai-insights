@@ -2,6 +2,7 @@
 import { FileText, Calendar, Download, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface DocumentCardProps {
   id: string;
@@ -13,6 +14,8 @@ interface DocumentCardProps {
 }
 
 const DocumentCard = ({ id, title, type, uploadDate, status, riskLevel }: DocumentCardProps) => {
+  const { toast } = useToast();
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Analyzed":
@@ -39,8 +42,16 @@ const DocumentCard = ({ id, title, type, uploadDate, status, riskLevel }: Docume
     }
   };
 
+  const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Download started",
+      description: `Downloading ${title}`
+    });
+  };
+
   return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow animate-fade-in">
       <div className="p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-center">
@@ -79,7 +90,12 @@ const DocumentCard = ({ id, title, type, uploadDate, status, riskLevel }: Docume
               <Eye className="h-4 w-4 mr-1" /> View
             </Link>
           </Button>
-          <Button variant="outline" size="sm" className="text-gray-700">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-gray-700"
+            onClick={handleDownload}
+          >
             <Download className="h-4 w-4 mr-1" /> Download
           </Button>
         </div>

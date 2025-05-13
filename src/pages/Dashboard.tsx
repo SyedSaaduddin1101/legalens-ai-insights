@@ -1,11 +1,16 @@
 
 import { FileText, Upload, ArrowUp, AlertTriangle } from "lucide-react";
+import { useState } from "react";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import DocumentCard from "../components/dashboard/DocumentCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
+  const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
+
   const recentDocuments = [
     {
       id: "doc-1234567",
@@ -32,6 +37,32 @@ const Dashboard = () => {
       riskLevel: "High",
     },
   ] as const;
+
+  const handleViewDocument = (id: string) => {
+    toast({
+      title: "Viewing document",
+      description: `Opening document ${id}`,
+    });
+  };
+
+  const handleDownloadDocument = (id: string) => {
+    toast({
+      title: "Download started",
+      description: `Downloading document ${id}`,
+    });
+  };
+
+  const handleUploadClick = () => {
+    setIsUploading(true);
+    // Simulate upload process
+    setTimeout(() => {
+      setIsUploading(false);
+      toast({
+        title: "Upload successful",
+        description: "Your document has been uploaded and is being processed",
+      });
+    }, 2000);
+  };
 
   return (
     <DashboardLayout>
@@ -122,11 +153,23 @@ const Dashboard = () => {
               Upload a contract, NDA, or legal agreement to get instant analysis with key terms highlighted and risks identified.
             </p>
           </div>
-          <Button size="lg" className="bg-white text-legal-blue hover:bg-gray-100 shrink-0" asChild>
-            <Link to="/dashboard/upload">
-              <Upload className="mr-2 h-5 w-5" />
-              Upload Document
-            </Link>
+          <Button 
+            size="lg" 
+            className="bg-white text-legal-blue hover:bg-gray-100 shrink-0"
+            onClick={handleUploadClick}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <>
+                <span className="animate-spin mr-2">◌</span>
+                Processing...
+              </>
+            ) : (
+              <>
+                <Upload className="mr-2 h-5 w-5" />
+                Upload Document
+              </>
+            )}
           </Button>
         </div>
       </div>

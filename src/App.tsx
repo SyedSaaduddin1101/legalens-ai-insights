@@ -19,6 +19,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Admin from "./pages/Admin";
 import Logout from "./pages/Logout";
+import DocumentDetails from "./pages/DocumentDetails";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard/documents/:id" 
+            element={
+              <ProtectedRoute>
+                <DocumentDetails />
               </ProtectedRoute>
             } 
           />
