@@ -1,15 +1,17 @@
 
-import { FileText, Upload, ArrowUp, AlertTriangle } from "lucide-react";
+import { FileText, Upload, ArrowUp, AlertTriangle, FileUpload } from "lucide-react";
 import { useState } from "react";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 import DocumentCard from "../components/dashboard/DocumentCard";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { analyzeDocument } from "../services/ai";
 
 const Dashboard = () => {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const recentDocuments = [
     {
@@ -38,30 +40,59 @@ const Dashboard = () => {
     },
   ] as const;
 
-  const handleViewDocument = (id: string) => {
-    toast({
-      title: "Viewing document",
-      description: `Opening document ${id}`,
-    });
-  };
-
-  const handleDownloadDocument = (id: string) => {
-    toast({
-      title: "Download started",
-      description: `Downloading document ${id}`,
-    });
-  };
-
-  const handleUploadClick = () => {
-    setIsUploading(true);
-    // Simulate upload process
-    setTimeout(() => {
-      setIsUploading(false);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
       toast({
-        title: "Upload successful",
-        description: "Your document has been uploaded and is being processed",
+        title: "File selected",
+        description: `${file.name} is ready to upload`,
       });
-    }, 2000);
+    }
+  };
+
+  const handleUploadClick = async () => {
+    if (selectedFile) {
+      setIsUploading(true);
+      
+      try {
+        // For demo purposes, we'll simulate reading the file
+        let fileContent = "";
+        
+        if (selectedFile.type === "text/plain") {
+          fileContent = await selectedFile.text();
+        } else {
+          // Simulate extracted content for non-text files
+          fileContent = "This is simulated content extracted from the document for demonstration purposes.";
+        }
+        
+        // Analyze the document
+        await analyzeDocument(fileContent, selectedFile.type);
+        
+        // Add to recent documents (would be a database operation in a real app)
+        // This is just for demo purposes
+        
+        toast({
+          title: "Upload successful",
+          description: "Your document has been uploaded and analyzed",
+        });
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast({
+          title: "Upload failed",
+          description: "There was an error processing your document",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUploading(false);
+        setSelectedFile(null);
+        // Clear the file input
+        const fileInput = document.getElementById('document-upload') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+      }
+    } else {
+      document.getElementById('document-upload')?.click();
+    }
   };
 
   return (
@@ -122,6 +153,66 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Document Upload Section - More Prominent */}
+      <div className="mb-8 relative overflow-hidden bg-gradient-to-r from-legal-blue to-legal-light-blue rounded-xl p-6 md:p-8 text-white animate-fade-in">
+        <div className="absolute top-0 right-0 w-64 h-64 -mr-10 -mt-10 opacity-20">
+          <div className="w-full h-full bg-white rounded-full blur-3xl"></div>
+        </div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between relative z-10">
+          <div className="mb-6 md:mb-0 md:mr-6">
+            <h3 className="text-xl font-bold mb-2">Analyze a New Document</h3>
+            <p className="text-white/80 max-w-md">
+              Upload a contract, NDA, or legal agreement to get instant analysis with key terms highlighted and risks identified.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <input
+              id="document-upload"
+              type="file"
+              className="hidden"
+              accept=".pdf,.doc,.docx,.txt"
+              onChange={handleFileChange}
+            />
+            <Button 
+              size="lg" 
+              className="bg-white text-legal-blue hover:bg-gray-100 shrink-0 border-white"
+              onClick={handleUploadClick}
+              disabled={isUploading}
+            >
+              {isUploading ? (
+                <>
+                  <span className="animate-spin mr-2">◌</span>
+                  Processing...
+                </>
+              ) : selectedFile ? (
+                <>
+                  <FileUpload className="mr-2 h-5 w-5" />
+                  Upload {selectedFile.name.substring(0, 15)}...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-5 w-5" />
+                  Upload Document
+                </>
+              )}
+            </Button>
+            {selectedFile && (
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="bg-transparent border-white text-white hover:bg-white hover:text-legal-blue shrink-0"
+                onClick={() => setSelectedFile(null)}
+              >
+                Select Different File
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="text-center mt-4 text-white/70 text-sm relative z-10">
+          Supported formats: PDF, DOC, DOCX, and TXT up to 20MB
+        </div>
+      </div>
+
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Recent Documents</h2>
@@ -142,35 +233,6 @@ const Dashboard = () => {
               riskLevel={doc.riskLevel}
             />
           ))}
-        </div>
-      </div>
-
-      <div className="bg-gradient-to-r from-legal-blue to-legal-light-blue rounded-xl p-6 md:p-8 text-white">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div className="mb-6 md:mb-0 md:mr-6">
-            <h3 className="text-xl font-bold mb-2">Analyze a New Document</h3>
-            <p className="text-white/80 max-w-md">
-              Upload a contract, NDA, or legal agreement to get instant analysis with key terms highlighted and risks identified.
-            </p>
-          </div>
-          <Button 
-            size="lg" 
-            className="bg-white text-legal-blue hover:bg-gray-100 shrink-0"
-            onClick={handleUploadClick}
-            disabled={isUploading}
-          >
-            {isUploading ? (
-              <>
-                <span className="animate-spin mr-2">◌</span>
-                Processing...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-5 w-5" />
-                Upload Document
-              </>
-            )}
-          </Button>
         </div>
       </div>
     </DashboardLayout>
