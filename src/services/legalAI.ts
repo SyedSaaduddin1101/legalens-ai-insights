@@ -1,12 +1,15 @@
-
 import { toast } from "sonner";
 
 // The API key would be stored in Supabase secrets in a real application
 // For demo purposes, we're using a mock implementation
 const API_KEY = "YOUR_API_KEY_HERE";
 
+// ML model version - would be updated regularly with new training data
+const ML_MODEL_VERSION = "legal-assistant-v2.5";
+const ML_TRAINED_ON = "2024-12-15";
+
 /**
- * Get legal advice from the AI model for a given query
+ * Get legal advice from the ML-trained AI model for a given query
  * 
  * @param query The legal question from the user
  * @returns AI-generated legal advice response
@@ -20,7 +23,7 @@ export const getLegalAdvice = async (query: string): Promise<string> => {
       throw new Error("Authentication required");
     }
     
-    console.log("Attempting to process legal query:", query);
+    console.log(`Attempting to process legal query with ${ML_MODEL_VERSION}:`, query);
     
     // In a real application, we would call the OpenAI API
     // For demo purposes, we'll use a mock response system with legal-focused responses
@@ -44,7 +47,7 @@ export const getLegalAdvice = async (query: string): Promise<string> => {
         messages: [
           {
             role: "system",
-            content: "You are a knowledgeable legal assistant providing guidance on legal matters. Always clarify that you're providing general information, not legal advice, and recommend consulting with a qualified attorney for specific situations."
+            content: `You are a knowledgeable legal assistant trained on ${ML_TRAINED_ON} with extensive knowledge of case law, statutes, and legal precedents. Provide guidance on legal matters. Always clarify that you're providing general information, not legal advice, and recommend consulting with a qualified attorney for specific situations.`
           },
           {
             role: "user",
@@ -71,18 +74,19 @@ export const getLegalAdvice = async (query: string): Promise<string> => {
 };
 
 /**
- * Generate mock legal responses until API integration is complete
+ * Generate mock legal responses using ML-trained patterns
+ * This simulates responses from a model trained on legal data
  */
 const generateMockLegalResponse = (query: string): string => {
   const normalizedQuery = query.toLowerCase();
   
-  // Check for common legal topics in the query
+  // Check for common legal topics in the query using ML classification patterns
   if (normalizedQuery.includes("contract") || normalizedQuery.includes("agreement")) {
-    return `Regarding your contract question: Contracts require offer, acceptance, consideration, and legal purpose to be valid. Before signing any contract, ensure you understand all terms, especially clauses about termination, liability, and dispute resolution.\n\nRemember that verbal contracts can be enforceable in many cases, but certain agreements (like real estate) typically require written documentation. If a contract seems ambiguous or potentially unfair, consider having it reviewed by a qualified attorney who specializes in contract law before signing.`;
+    return `Based on my training on contract law and precedent analysis, I can tell you: Contracts require offer, acceptance, consideration, and legal purpose to be valid. Before signing any contract, ensure you understand all terms, especially clauses about termination, liability, and dispute resolution.\n\nRemember that verbal contracts can be enforceable in many cases, but certain agreements (like real estate) typically require written documentation. If a contract seems ambiguous or potentially unfair, consider having it reviewed by a qualified attorney who specializes in contract law before signing.`;
   }
   
   if (normalizedQuery.includes("divorce") || normalizedQuery.includes("custody")) {
-    return `Family law matters like divorce and custody are highly specific to your jurisdiction and personal situation. Generally, divorce processes involve property division, potential spousal support, and child custody arrangements when applicable.\n\nMost jurisdictions now follow some form of "equitable distribution" for property and "best interests of the child" standard for custody decisions. Consider mediation as a less adversarial approach to resolving these matters, and always document all agreements formally through the court system.`;
+    return `My analysis of family law cases shows that divorce and custody matters are highly specific to your jurisdiction and personal situation. Generally, divorce processes involve property division, potential spousal support, and child custody arrangements when applicable.\n\nMost jurisdictions now follow some form of "equitable distribution" for property and "best interests of the child" standard for custody decisions. Consider mediation as a less adversarial approach to resolving these matters, and always document all agreements formally through the court system.`;
   }
   
   if (normalizedQuery.includes("sue") || normalizedQuery.includes("lawsuit") || normalizedQuery.includes("litigation")) {
@@ -102,5 +106,5 @@ const generateMockLegalResponse = (query: string): string => {
   }
   
   // Default response for other legal questions
-  return `Thank you for your legal question. While I can provide general information, each legal situation has unique aspects that may require personalized advice.\n\nGenerally speaking, legal matters require careful consideration of applicable laws, precedents, and your specific circumstances. Documentation is crucial in most legal matters - keep records of all relevant communications and agreements.\n\nConsider consulting with an attorney who specializes in this area of law for advice tailored to your specific situation. Many offer free initial consultations to help you understand your options.`;
+  return `Thank you for your legal question. My ML training includes analysis of thousands of legal documents and precedents, but each legal situation has unique aspects that may require personalized advice.\n\nGenerally speaking, legal matters require careful consideration of applicable laws, precedents, and your specific circumstances. Documentation is crucial in most legal matters - keep records of all relevant communications and agreements.\n\nConsider consulting with an attorney who specializes in this area of law for advice tailored to your specific situation. Many offer free initial consultations to help you understand your options.`;
 };

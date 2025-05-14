@@ -19,6 +19,7 @@ import Contact from "./pages/Contact";
 import LearnMore from "./pages/LearnMore";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
+import ProfessionalTools from "./pages/ProfessionalTools";
 import Admin from "./pages/Admin";
 import Logout from "./pages/Logout";
 import DocumentDetails from "./pages/DocumentDetails";
@@ -96,6 +97,14 @@ const App = () => {
               } 
             />
             <Route 
+              path="/dashboard/tools" 
+              element={
+                <ProtectedRoute>
+                  <ProfessionalTools />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/try-now" 
               element={
                 <ProtectedRoute>
@@ -112,6 +121,12 @@ const App = () => {
               } 
             />
             <Route path="/logout" element={<Logout />} />
+            
+            {/* Common misspellings or legacy paths - redirect to avoid 404s */}
+            <Route path="/dashboard/tool" element={<ProtectedRoute><ProfessionalTools /></ProtectedRoute>} />
+            <Route path="/dashboard/document" element={<ProtectedRoute><MyDocuments /></ProtectedRoute>} />
+            <Route path="/dashboard/setting" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
+            <Route path="/dashboard/settings" element={<ProtectedRoute><AccountSettings /></ProtectedRoute>} />
             
             {/* Catch-all 404 route */}
             <Route path="*" element={<NotFound />} />

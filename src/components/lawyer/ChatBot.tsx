@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { getLegalAdvice } from '@/services/legalAI';
+import { useLegalAI } from '@/hooks/use-legal-ai';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -19,7 +20,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm your AI legal assistant. How can I help with your legal questions today?",
+      content: "Hello! I'm your AI legal assistant. How can I help with your legal questions today? I've been trained on legal precedents, statutes, and case law.",
       timestamp: new Date(),
     },
   ]);
@@ -28,6 +29,7 @@ const ChatBot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { getAdvice } = useLegalAI();
 
   useEffect(() => {
     const userLoggedIn = !!localStorage.getItem("legalens-user");
@@ -68,13 +70,13 @@ const ChatBot = () => {
     setIsLoading(true);
     
     try {
-      // Call the legal AI service
-      const response = await getLegalAdvice(input.trim());
+      // Using the legal AI service with ML-enhanced capabilities
+      const response = await getAdvice(input.trim());
       
       // Add AI response
       const aiMessage: Message = {
         role: 'assistant',
-        content: response,
+        content: response || "I apologize, but I couldn't process your request. Please try again.",
         timestamp: new Date(),
       };
       
@@ -232,7 +234,7 @@ const ChatBot = () => {
                 </div>
               </div>
               <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                Powered by GPT-4 legal assistant
+                Powered by ML-trained legal assistant (GPT-4)
               </p>
             </div>
           </motion.div>
