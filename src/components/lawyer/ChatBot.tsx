@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Send, X, MessageSquare, User, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { getLegalAdvice } from '@/services/legalAI';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -18,7 +18,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hello! I'm your AI legal assistant. How can I help with your legal questions today?',
+      content: "Hello! I'm your AI legal assistant. How can I help with your legal questions today?",
       timestamp: new Date(),
     },
   ]);
