@@ -44,6 +44,50 @@
   }
 }
 
+@keyframes neon-pulse {
+  0% {
+    box-shadow: 0 0 5px rgba(142, 45, 226, 0.5), 0 0 10px rgba(142, 45, 226, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(142, 45, 226, 0.8), 0 0 20px rgba(142, 45, 226, 0.5), 0 0 30px rgba(142, 45, 226, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(142, 45, 226, 0.5), 0 0 10px rgba(142, 45, 226, 0.3);
+  }
+}
+
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(142, 45, 226, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(142, 45, 226, 0.8), 0 0 25px rgba(74, 0, 224, 0.5);
+  }
+}
+
+@keyframes border-glow {
+  0%, 100% {
+    border-color: rgba(142, 45, 226, 0.5);
+    box-shadow: 0 0 5px rgba(142, 45, 226, 0.3);
+  }
+  50% {
+    border-color: rgba(142, 45, 226, 0.8);
+    box-shadow: 0 0 15px rgba(142, 45, 226, 0.5);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -183,6 +227,64 @@
   .hover-glow {
     @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(142,45,226,0.5)];
   }
+  
+  /* New futuristic classes */
+  .neon-glow {
+    animation: neon-pulse 2s infinite;
+  }
+  
+  .text-glow {
+    animation: text-glow 2s infinite;
+  }
+  
+  .border-glow {
+    animation: border-glow 3s infinite;
+  }
+  
+  .gradient-animate {
+    background-size: 200% 200%;
+    animation: gradient-shift 5s ease infinite;
+  }
+  
+  .cyber-card {
+    @apply relative bg-gradient-to-br from-[#1E1E1E] to-[#0F0F0F] border border-[#8E2DE2]/30 rounded-lg p-5 overflow-hidden;
+  }
+  
+  .cyber-card::before {
+    content: '';
+    @apply absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8E2DE2] via-[#4A00E0] to-[#B9FF66];
+  }
+  
+  .cyber-card::after {
+    content: '';
+    @apply absolute -inset-px bg-gradient-to-r from-[#8E2DE2]/0 via-[#8E2DE2]/30 to-[#4A00E0]/0 opacity-0 transition-opacity duration-300;
+  }
+  
+  .cyber-card:hover::after {
+    @apply opacity-100;
+  }
+  
+  .matrix-bg {
+    @apply relative;
+    overflow: hidden;
+  }
+  
+  .matrix-bg::before {
+    content: "";
+    @apply absolute inset-0 bg-[url('/matrix-pattern.png')] bg-repeat opacity-5;
+    background-size: 200px;
+  }
+  
+  .digital-noise {
+    position: relative;
+  }
+  
+  .digital-noise::after {
+    content: "";
+    @apply absolute inset-0 bg-[url('/noise.png')] bg-repeat opacity-[0.03];
+    background-size: 150px;
+    mix-blend-mode: overlay;
+  }
 }
 
 @layer utilities {
@@ -233,4 +335,3 @@ body {
     transform: translateY(0);
   }
 }
-

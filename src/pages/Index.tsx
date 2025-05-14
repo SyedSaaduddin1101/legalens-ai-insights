@@ -8,6 +8,7 @@ import TestimonialSection from "../components/TestimonialSection";
 import FAQSection from "../components/FAQSection";
 import DocumentUpload from "../components/DocumentUpload";
 import CTASection from "../components/CTASection";
+import ChatBot from "../components/lawyer/ChatBot";
 
 // Declare the custom spline-viewer element type
 declare global {
@@ -39,6 +40,9 @@ const Index = () => {
       <FAQSection />
       <CTASection />
       <Footer />
+      
+      {/* Chatbot - available on all pages */}
+      <ChatBot />
     </div>
   );
 };

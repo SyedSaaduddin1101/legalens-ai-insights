@@ -1,190 +1,172 @@
 
-import { useState } from 'react';
-import { Check, X, Bell, AlertTriangle, FileText, Calendar, MessageSquare } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { Bell, X, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  time: string;
-  type: 'document' | 'alert' | 'calendar' | 'message';
-  read: boolean;
-}
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface NotificationsPanelProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const NotificationsPanel = ({ isOpen, onClose }: NotificationsPanelProps) => {
-  const [notifications, setNotifications] = useState<Notification[]>([
+type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  time: string;
+  read: boolean;
+};
+
+const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ isOpen, onClose }) => {
+  const [notifications, setNotifications] = React.useState<Notification[]>([
     {
       id: 'notif-1',
       title: 'Document Analysis Complete',
-      message: 'Your "Service Contract - Marketing Services" analysis is ready for review.',
-      time: '2 minutes ago',
-      type: 'document',
-      read: false
+      message: 'Your employment contract analysis is ready to view.',
+      type: 'success',
+      time: '10 minutes ago',
+      read: false,
     },
     {
       id: 'notif-2',
-      title: 'High Risk Alert',
-      message: 'A critical risk has been identified in your "Non-Disclosure Agreement".',
-      time: '1 hour ago',
-      type: 'alert',
-      read: false
+      title: 'Risk Alert',
+      message: 'High risk identified in contract section 5.3 regarding liability.',
+      type: 'warning',
+      time: '2 hours ago',
+      read: false,
     },
     {
       id: 'notif-3',
-      title: 'Upcoming Meeting',
-      message: 'Client consultation scheduled tomorrow at 2:00 PM.',
-      time: '3 hours ago',
-      type: 'calendar',
-      read: true
-    },
-    {
-      id: 'notif-4',
-      title: 'New Message',
-      message: 'Jane Smith from Legal Department sent you a message regarding case #45872.',
+      title: 'Document Shared',
+      message: 'Jane Smith shared a document with you: "NDA - Project Apollo"',
+      type: 'info',
       time: '1 day ago',
-      type: 'message',
-      read: true
-    }
+      read: true,
+    },
   ]);
-  
+
   const markAsRead = (id: string) => {
-    setNotifications(notifications.map(notif => 
-      notif.id === id ? { ...notif, read: true } : notif
-    ));
+    setNotifications(
+      notifications.map((notif) =>
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
   };
-  
+
   const markAllAsRead = () => {
-    setNotifications(notifications.map(notif => ({
-      ...notif,
-      read: true
-    })));
+    setNotifications(
+      notifications.map((notif) => ({ ...notif, read: true }))
+    );
   };
-  
-  const deleteNotification = (id: string) => {
-    setNotifications(notifications.filter(notif => notif.id !== id));
-  };
-  
+
   const getIcon = (type: string) => {
-    switch(type) {
-      case 'document': return <FileText className="h-5 w-5 text-[#4A00E0]" />;
-      case 'alert': return <AlertTriangle className="h-5 w-5 text-red-500" />;
-      case 'calendar': return <Calendar className="h-5 w-5 text-green-500" />;
-      case 'message': return <MessageSquare className="h-5 w-5 text-blue-500" />;
-      default: return <Bell className="h-5 w-5 text-gray-500" />;
+    switch (type) {
+      case 'success':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'warning':
+        return <AlertTriangle className="h-5 w-5 text-amber-500" />;
+      default:
+        return <FileText className="h-5 w-5 text-blue-500" />;
     }
   };
-  
-  const unreadCount = notifications.filter(n => !n.read).length;
-  
+
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.3 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black z-40"
-            onClick={onClose}
-          />
-          
-          {/* Panel */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed top-16 right-4 w-80 bg-white dark:bg-[#1E293B] rounded-xl shadow-2xl overflow-hidden z-50 border border-[#8E2DE2]/20"
-          >
-            <div className="p-4 border-b border-[#8E2DE2]/10 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {unreadCount > 0 ? `${unreadCount} unread messages` : 'No new notifications'}
-                </p>
+        <motion.div
+          initial={{ opacity: 0, x: 300 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 300 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed top-0 right-0 z-50 h-full w-full sm:w-96 bg-white dark:bg-[#1E293B] shadow-xl"
+        >
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+              <div className="flex items-center">
+                <Bell className="h-5 w-5 mr-2 text-[#8E2DE2]" />
+                <h2 className="text-lg font-semibold">Notifications</h2>
               </div>
-              <Button size="sm" variant="ghost" onClick={markAllAsRead}>
-                <Check className="h-4 w-4 mr-1" />
-                <span className="text-xs">Mark all read</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <X className="h-5 w-5" />
               </Button>
             </div>
-            
-            <div className="overflow-y-auto max-h-[400px] scrollbar-thin scrollbar-thumb-[#8E2DE2]/20 scrollbar-track-transparent">
-              {notifications.length > 0 ? (
-                <div className="divide-y divide-[#8E2DE2]/10">
+
+            {notifications.length > 0 ? (
+              <>
+                <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-[#0F172A]">
+                  <span className="text-sm text-gray-500">
+                    {notifications.filter((n) => !n.read).length} unread
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={markAllAsRead}
+                    className="text-xs text-[#8E2DE2] hover:text-[#4A00E0]"
+                  >
+                    Mark all as read
+                  </Button>
+                </div>
+
+                <div className="flex-grow overflow-y-auto">
                   {notifications.map((notification) => (
                     <motion.div
                       key={notification.id}
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, height: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
                       className={cn(
-                        "p-4 hover:bg-[#8E2DE2]/5 transition-colors relative",
-                        notification.read ? "" : "bg-[#4A00E0]/5"
+                        "p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#1A1F2C] transition-colors cursor-pointer",
+                        !notification.read && "bg-blue-50 dark:bg-[#1E1E1E]"
                       )}
+                      onClick={() => markAsRead(notification.id)}
                     >
                       <div className="flex">
-                        <div className="mr-3 mt-1">
+                        <div className="mr-3 mt-0.5">
                           {getIcon(notification.type)}
                         </div>
                         <div className="flex-1">
-                          <h4 className={cn(
-                            "text-sm font-medium",
-                            notification.read ? "text-gray-700 dark:text-gray-300" : "text-gray-900 dark:text-white"
-                          )}>
-                            {notification.title}
-                          </h4>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className={cn(
+                              "text-sm font-medium",
+                              !notification.read && "font-semibold text-[#8E2DE2]"
+                            )}>
+                              {notification.title}
+                            </h3>
+                            <span className="text-xs text-gray-500">{notification.time}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                             {notification.message}
                           </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            {notification.time}
-                          </p>
-                        </div>
-                        <div className="flex flex-col space-y-2">
-                          {!notification.read && (
-                            <button
-                              onClick={() => markAsRead(notification.id)}
-                              className="rounded-full p-1 hover:bg-[#8E2DE2]/10 text-[#8E2DE2]"
-                            >
-                              <Check className="h-4 w-4" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => deleteNotification(notification.id)}
-                            className="rounded-full p-1 hover:bg-red-100 text-red-500"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
                         </div>
                       </div>
+                      {!notification.read && (
+                        <div className="absolute top-1/2 left-2 -translate-y-1/2 w-1.5 h-1.5 bg-[#8E2DE2] rounded-full"></div>
+                      )}
                     </motion.div>
                   ))}
                 </div>
-              ) : (
-                <div className="p-6 text-center">
-                  <Bell className="mx-auto h-10 w-10 text-gray-300 dark:text-gray-600 mb-3" />
-                  <p className="text-gray-500 dark:text-gray-400">No notifications</p>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center flex-grow p-8 text-center">
+                <div className="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
+                  <Bell className="h-8 w-8 text-gray-400" />
                 </div>
-              )}
-            </div>
-            
-            <div className="p-4 border-t border-[#8E2DE2]/10 text-center">
-              <Button variant="link" className="text-[#8E2DE2] hover:text-[#4A00E0]" size="sm">
-                View all notifications
-              </Button>
-            </div>
-          </motion.div>
-        </>
+                <h3 className="text-lg font-medium mb-1">No notifications</h3>
+                <p className="text-gray-500 text-sm max-w-xs">
+                  When you have new notifications, they'll appear here.
+                </p>
+              </div>
+            )}
+          </div>
+        </motion.div>
       )}
     </AnimatePresence>
   );
