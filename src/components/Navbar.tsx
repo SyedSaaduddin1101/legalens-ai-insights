@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
-import Logo from './Logo';
+import LawyerLogo from './LawyerLogo';
 import { HashLink } from 'react-router-hash-link';
 
 const Navbar = () => {
@@ -54,7 +54,7 @@ const Navbar = () => {
       }`}
     >
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Logo size="md" variant={isScrolled ? 'dark' : 'dark'} />
+        <LawyerLogo size="md" variant={isScrolled ? 'dark' : 'dark'} />
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">

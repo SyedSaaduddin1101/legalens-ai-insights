@@ -5,7 +5,7 @@ import {
   FileText, Home, Settings, Users, BarChart, LogOut, 
   Menu, X, ChevronRight, Shield, Bell, Upload
 } from 'lucide-react';
-import Logo from '../Logo';
+import LawyerLogo from '../LawyerLogo';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -135,7 +135,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         animate={isMobile ? (sidebarOpen ? "open" : "closed") : false}
       >
         <div className="flex-shrink-0 px-4 py-6 flex items-center justify-between">
-          <Logo size="md" />
+          <LawyerLogo size="md" />
           {isMobile && (
             <Button
               variant="ghost"

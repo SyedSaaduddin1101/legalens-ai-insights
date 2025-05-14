@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import MyDocuments from "./pages/MyDocuments";
+import AccountSettings from "./pages/AccountSettings";
 import NotFound from "./pages/NotFound";
 import TryNow from "./pages/TryNow";
 import Features from "./pages/Features";
@@ -70,6 +72,14 @@ const App = () => {
               } 
             />
             <Route 
+              path="/dashboard/documents" 
+              element={
+                <ProtectedRoute>
+                  <MyDocuments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/dashboard/documents/:id" 
               element={
                 <ProtectedRoute>
@@ -78,10 +88,10 @@ const App = () => {
               } 
             />
             <Route 
-              path="/dashboard/*" 
+              path="/dashboard/account" 
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <AccountSettings />
                 </ProtectedRoute>
               } 
             />
