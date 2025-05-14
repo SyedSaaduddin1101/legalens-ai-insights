@@ -22,6 +22,18 @@ declare global {
 }
 
 const Index = () => {
+  // Add script for Spline viewer
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://unpkg.com/@splinetool/viewer@0.9.490/build/spline-viewer.js";
+    script.type = "module";
+    document.head.appendChild(script);
+    
+    return () => {
+      document.head.removeChild(script);
+    }
+  }, []);
+  
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Send, X, MessageSquare, User, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
